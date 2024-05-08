@@ -1,0 +1,88 @@
+---
+title: "WorldMapsLab"
+author: "Ben Goldstone"
+date: "11/1/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr)
+require(maps)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_map()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+# World Maps Lab
+
+
+## Import Data
+```{r}
+WorldData = read_csv("~/CSVs/WorldData.csv")
+head(WorldData)
+
+world = map_data("world")
+head(world)
+
+data("world.cities")
+head(world.cities)
+
+```
+
+## Graphs
+```{r}
+# World Map Outline
+gf_polygon(lat~long,data=world,group=~group,color="black",size=0.5, fill=NA)
+
+# Adding Cities
+gf_point(lat~long,data=subset(world.cities,capital==1),size=~pop/1000000,alpha=0.5) %>%
+gf_polygon(lat~long,data=world,group=~group,color="black",size=0.2, fill=NA) %>%
+  gf_refine(coord_equal()) %>%
+  gf_labs(size="Population\n(Millions)",title="\n  Europe appears to be the most Densely Populated Area") %>%
+  gf_theme(legend.position="top")
+
+# Cities in County
+gf_point(lat~long,data=subset(world.cities,country.etc=="Poland"),size=~pop/1000000,
+         alpha=0.5) %>%
+  gf_point(lat~long,data=subset(world.cities,country.etc=="Poland" & capital==1),
+           color="red") %>%
+  gf_polygon(lat~long,data=subset(world,region=="Poland"),group=~group,
+             color="black",size=0.2, fill=NA) %>%
+  gf_refine(coord_equal()) %>%
+  gf_labs(size="Population\n(Millions)",
+          title="\tWarsaw has the Highest Population in Poland")
+  
+# Fill by Country
+NewWorld = full_join(world,WorldData)
+head(NewWorld)
+gf_polygon(lat~long,data=subset(NewWorld,Year==2009),group=~group,fill=~PPP,
+           color="black",size=0.2) %>%
+  gf_refine(coord_equal(),scale_fill_viridis_c(na.value="gray50")) %>%
+  gf_theme(legend.position="bottom") %>%
+gf_labs(title="  Scandinavian Countries Have the Highest Purchasing Power Parity.")
+
+# Faceted
+gf_polygon(lat~long,data=subset(NewWorld,Year>=2009),group=~group,fill=~PPP,
+           color="black",size=0.2) %>%
+  gf_refine(coord_equal(),scale_fill_viridis_c(na.value="gray50")) %>%
+  gf_theme(legend.position="bottom") %>% 
+  gf_facet_wrap(~Year,nrow=3)
+```
+
+

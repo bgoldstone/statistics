@@ -1,0 +1,38 @@
+---
+title: "Flying Paper Airplanes"
+author: "Ben Goldstone"
+date: "4/26/23"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+
+```{r}
+library(readr)
+Airplanes <- read_csv("~/CSVs/Airplanes.csv")
+head(Airplanes)
+nrow(Airplanes)
+
+gf_boxplot(Distance~Plane, data=Airplanes)
+favstats(Distance~Plane, data=Airplanes)
+model = aov(Distance~Plane, data=Airplanes)
+summary(model)
+TukeyHSD(model)
+```
+

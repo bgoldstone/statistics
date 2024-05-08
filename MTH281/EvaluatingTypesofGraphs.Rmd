@@ -1,0 +1,88 @@
+---
+title: "Evaluating Types of Graphs"
+author: "Ben Goldstone"
+date: "9/18/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Weekday (Categorical/Ordinal) and Births (Numerical)
+```{r}
+help("Births2015")
+head(Births2015)
+gf_boxplot(wday~births,fill=~wday,data=Births2015,alpha=0.5)
+gf_sina(births~wday,color=~wday,data=Births2015,alpha=0.5) %>%
+  gf_refine(coord_flip())
+# gf_jitter(wday~births,color=~wday,data=Births2015,alpha=0.5,shape=~wday)
+gf_jitter(wday~births,color=~wday,data=Births2015,alpha=0.5,show.legend = FALSE)
+gf_violin(wday~births,fill=~wday,data=Births2015,alpha=0.5) %>%
+  gf_theme(legend.position= "none")
+```
+
+# Layering
+```{r}
+gf_violin(births~wday,fill=~wday,data=Births2015) %>%
+  gf_sina(births~wday,data=Births2015, color="white",alpha=0.5) %>%
+  gf_theme(theme_classic()) %>%
+  gf_refine(coord_flip()) %>%
+  gf_theme(legend.position="none") %>%
+  gf_labs(y="Births",y="Weekdays", title="Number of Births per Day of the Week",subtitle="Births are more common on the weekdays.")
+  
+```
+
+# Categorical Graphs
+```{r}
+# gf_histogram(~births|wday, data=Births2015)
+gf_histogram(~births/1000,data=Births2015, fill=~wday) %>% 
+  gf_facet_wrap(~wday,ncol=2) %>% 
+  gf_theme(legend.position = "none") %>% 
+  gf_labs(x="Number of Births (in thousands)",y="Days of the Week")
+
+
+gf_density(~births/1000,data=Births2015, fill=~wday) %>% 
+  gf_facet_wrap(~wday) %>% 
+  gf_theme(legend.position = "none") %>% 
+  gf_labs(x="Number of Births (in thousands)",y="Days of the Week")
+
+
+gf_dens(~births/1000,data=Births2015, color=~wday) %>% 
+  gf_facet_wrap(~wday) %>% 
+   gf_theme(legend.position = "none") %>% 
+  gf_labs(x="Number of Births (in thousands)",y="Days of the Week")
+```
+
+```{r}
+gf_dens(~births/1000,data=Births2015, color=~wday) %>% 
+  gf_labs(x="Number of Births (in thousands)",y="Days of the Week") %>%
+  gf_theme(theme_classic())
+
+gf_density_ridges(wday~births,data=Births2015,fill=~wday) %>% 
+  gf_labs(x="Number of Births",y="Days of the Week", title="Number of Births per Day of the Week",subtitle="Births are more common on the weekdays than weekends.") %>%
+  gf_theme(theme_ridges()) %>%
+  gf_theme(legend.position="none") %>%
+  gf_refine(scale_y_discrete(limits=rev))
+     
+```
+

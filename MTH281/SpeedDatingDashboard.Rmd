@@ -1,0 +1,68 @@
+---
+title: "Speed Dating Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+require(mosaic)
+require(plotly)
+require(tidyr)
+require(Lock5Data)
+theme_set(theme_bw())
+data("SpeedDating")
+head(SpeedDating)
+SpeedDating2 = gather(SpeedDating, key="MaleFemaleDecision",value="Decision",1:2)
+SpeedDating2 = gather(SpeedDating2, key="FunMaleFemale",value="Fun",15:16)
+SpeedDating2$Decision = recode(SpeedDating2$Decision, "1" = "Yes", "0" = "No")
+SpeedDating2$FunMaleFemale = recode(SpeedDating2$FunMaleFemale, "FunM" = "M", "FunF" = "F")
+SpeedDating2$MaleFemaleDecision = recode(SpeedDating2$MaleFemaleDecision, "DecisionM" = "M", "DecisionF" = "F")
+head(SpeedDating2)
+SpeedDating2 = gather(SpeedDating2, key="AgeGender",value="Age",5:6)
+SpeedDating2$AgeGender = recode(SpeedDating2$AgeGender, "AgeF" = "F", "AgeM" = "M")
+SpeedDating2 = gather(SpeedDating2, key="RaceGender",value="Race",5:6)
+SpeedDating2$AgeGender = recode(SpeedDating2$AgeGender, "AgeF" = "F", "AgeM" = "M")
+head(SpeedDating2)
+
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Females Who Are Funner Get Another Date
+
+```{r}
+gf_boxplot(~Fun|FunMaleFemale,color=~Decision, data=SpeedDating2, position = position_dodge(width=1)) %>%
+  gf_theme(theme_classic()) %>%
+  gf_theme(axis.text.y=element_blank(), axis.ticks.y=element_blank()) %>%
+  gf_labs(color="Another Date?")
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Males at 30 Tend to Prefer Caucasions Over Other Races
+
+```{r}
+gf_bar(~AgeM|RaceM, data=na.omit(SpeedDating))
+```
+
+### Males Being Liked and Sincere Correlation
+
+```{r}
+gf_point(SincereM~LikeM, data=SpeedDating) %>%
+  gf_lm()
+```
+
+
+### Valuebox
+
+
+```{r}
+corr = round(cor(SincereM~LikeM,data = na.omit(SpeedDating)),digits=2)
+valueBox(corr,caption = "There is a slight correlation between Males that are Sincere and Being Liked", icon= "fa-line-chart")
+```
+

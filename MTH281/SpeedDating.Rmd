@@ -1,0 +1,48 @@
+---
+title: "Untitled"
+author: ""
+date: ""
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(Lock5Data)
+require(tidyr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+```{r}
+data("SpeedDating")
+head(SpeedDating)
+SpeedDating2 = gather(SpeedDating, key="MaleFemaleDecision",value="Decision",1:2)
+SpeedDating2 = gather(SpeedDating2, key="FunMaleFemale",value="Fun",15:16)
+SpeedDating2$Decision = recode(SpeedDating2$Decision, "1" = "Yes", "0" = "No")
+SpeedDating2$FunMaleFemale = recode(SpeedDating2$FunMaleFemale, "FunM" = "M", "FunF" = "F")
+SpeedDating2$MaleFemaleDecision = recode(SpeedDating2$MaleFemaleDecision, "DecisionM" = "M", "DecisionF" = "F")
+head(SpeedDating2)
+
+gf_boxplot(~Fun|Decision,color=~FunMaleFemale, data=SpeedDating2, position = position_dodge(width=1)) %>%
+  gf_theme(theme_classic()) %>%
+  gf_theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
+
+```
+

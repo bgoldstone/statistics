@@ -1,0 +1,75 @@
+---
+title: "Project 2 Report"
+author: "Ben Goldstone"
+date: "3/10/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+
+```
+# Topic: Factors that effect food choice.
+
+**Interest**: We thought that food was a great universal topic to ask people. Everybody needs to eat to survive, so this is a great topic in order to limit bias and also who doesn't like food?
+
+**Questions Asked**:
+
+1. Which of the following factors most influence your food choices?  (Please select all that apply)
+
+2. How much does cost factor into your food choices?
+
+3. How often do you eat out at restaurants or order takeout?
+
+4. How often do you consider the nutritional value of the foods you eat?
+
+5. When making food choices, how important is it to you to consider the environmental impact of the food you consume?
+
+**Survey Sent**: Posted to Facebook (older relatives), Instagram (General Friends), Women's Soccer Team, Direct Muhlenberg friend group, Muhlenberg Stem students
+
+
+**Sample Size**: 50
+
+
+## Hypothesis
+People who order food because of price will likely eat out less than those who do not care about price.
+
+## Data Collection
+
+```{r}
+library(readr)
+DataCollectionSurvey <- read_csv("~/Projects/Project 2/DataCollectionSurvey.csv", 
+    col_types = cols(FoodChoiceInfluencers = col_character(), 
+        FrequencyOfRestaurantsOrTakeout = col_character(), 
+        NutritionalValueConsideration = col_character(), 
+        EnvironmentalImpactConsideration = col_character(), 
+        CostConsideration = col_integer()))
+head(DataCollectionSurvey)
+gf_barh( ~ FoodChoiceInfluencers | FrequencyOfRestaurantsOrTakeout,data = na.omit(DataCollectionSurvey))
+
+tally(~ FoodChoiceInfluencers | FrequencyOfRestaurantsOrTakeout,data =na.omit( DataCollectionSurvey))
+
+nrow(DataCollectionSurvey)
+
+```
+## Graph Analysis & Statistic
+People who eat in restaurants or take out from restaurants more frequently typically have more consistent food influences.
+
+Of all of the people who eat out and care about price, **37.84%** eat out a few time a month because of price.
+
+
+## Reflection
+
+I think this experiment went fairly well for the most part. If I were to try and do this experiment again, I would probably ask people to select their most influential trait in deciding to go out to a restaurant or take out food instead of asking them to check as many as they want.

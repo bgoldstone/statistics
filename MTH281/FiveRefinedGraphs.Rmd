@@ -1,0 +1,116 @@
+---
+title: "Five Refined Graphs"
+author: "Ben Goldstone"
+date: "9/10/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(ggplot2)
+require(ggeffects)
+require(readr)
+require(AER)
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+theme_set(theme_bw()) # change theme for ggplot2
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+## College Distance Data Import
+[College Distance Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/CollegeDistance.html)
+```{r}
+collegeDistance <- read_csv("~/CSVs/CollegeDistance.csv")
+head(collegeDistance)
+```
+
+
+### Composite test scores and gender
+```{r}
+gf_boxplot(score~gender,data=collegeDistance, fill=~gender) + geom_violin(alpha=0.25, color=NA)
+```
+
+
+## China Income Data Import
+[China Income Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/ChinaIncome.html)
+```{r}
+ChinaIncome <- read_csv("~/CSVs/ChinaIncome.csv")
+head(ChinaIncome)
+```
+
+### Construction Income over Time
+```{r}
+gf_point(constructionIncome~year,data=ChinaIncome,color = ~ (constructionIncome > 1000)) + 
+  # Sets colors based on True or False Condition
+  scale_color_manual(
+    values = c("TRUE" = "cyan3", "FALSE" = "coral1"),
+    # Sets labels based on condition
+    labels = c("Above 1,000", "Below 1,000")) +
+  # Sets legend header
+  labs(color="Construction Income")
+```
+
+### Industry Income and Agriculture Income
+```{r}
+
+# Area Plot
+ggplot(data=ChinaIncome,aes(x = industryIncome,y = agricultureIncome,fill="darkgreen",color="green")) + geom_area(alpha=0.6, size=1, show.legend = FALSE) + coord_cartesian(xlim=c(300,4000), ylim=c(0,300))
+
+
+# Sets color for industries
+industry = "blue"
+agriculture="darkgreen"
+
+# Plots lines for industry and agriculture layered
+gf_line(industryIncome~year,data=ChinaIncome,color=industry) %>% gf_line(agricultureIncome~year,data=ChinaIncome,color=agriculture) %>%
+
+# Puts "Industry" and "Agriculture" text on plot with the corresponding color
+# wish I could make the font thinner or more spread out...
+gf_text(x=1988,y=4750,label="industry",color=industry,hjust = 1.2) %>% gf_text(x=1988,y=500,color=agriculture,label="agriculture", hjust=1.2)
+```
+
+## Consumer Goods Data Import
+[Consumer Goods Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/ConsumerGood.html)
+```{r}
+ConsumerGood <- read_csv("~/CSVs/ConsumerGood.csv")
+head(ConsumerGood)
+```
+
+### Share and distribution of consumer goods
+```{r}
+# Modify Dataset to include Ypred
+ConsumerGood = ConsumerGood %>% mutate(Ypred=-0.8896+3.547*distribution)
+
+# Linear Model
+dist_share_model <- lm(share ~ distribution, data = ConsumerGood)
+summary(dist_share_model)
+
+# scatter plot
+gf_point(
+  share ~ distribution,
+  data = ConsumerGood,
+  # sets color based on residual
+  color = ifelse(residuals(dist_share_model) == 0,"green",
+  # if point not on line set as red or blue
+  ifelse(residuals(dist_share_model) > 0, "red", "blue")
+  )) %>%
+  # plots line of best fit
+  gf_lm(color="gray50",alpha=0.5) %>%
+  # plots dotted residual lines from point to linear model
+  gf_linerange(Ypred+share~distribution,linetype="dotted",color="gray30")
+
+```

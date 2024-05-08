@@ -1,0 +1,83 @@
+---
+title: "Exploring Data"
+author: "Ben Goldstone"
+date: "02/06/23"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+# Importing Dataset
+
+```{r}
+library(readr)
+Spring2023Dataset <- read_csv("~/CSVs/Spring2023Dataset.csv", 
+    col_types = cols(SpendOnYou = col_integer(), 
+        TextsSent = col_integer(), TextsReceived = col_integer(), 
+        GroupText = col_integer(), HighwayAlone = col_integer(), 
+        HighwayPassenger = col_integer()))
+head(Spring2023Dataset)
+
+```
+# Study Location
+```{r}
+gf_bar( ~ StudyLocation | Personality,
+        data = Spring2023Dataset) + theme(axis.text.x = element_text(
+          angle = 45,
+          hjust = 0.5,
+          vjust = 0.5
+        ))
+```
+
+## Study Location Variables
+**Response Variable:** Study Location (Categorical) - locations students prefer to study in.
+
+**Explanatory Variable:** Personality(Categorical) - personality type of students.
+## Observations
+Based on the data set, it seems that people who are introverted or extroverted, prefer studying in a quiet place
+```{r}
+tally(StudyLocation~Personality, data=Spring2023Dataset, format='prop')
+```
+## Conclusions
+In terms of this data set, I would expect more extroverts to work in a public space. According to this data set though, it seems extroverts prefer a quiet place around 56.7% higher than the proportion of extroverts that prefer to study in a public space.
+
+# Generosity
+```{r}
+gf_boxplot(SpendOnYou ~ Generous, data = Spring2023Dataset, fill = "darkgreen") +
+  scale_x_discrete(
+    labels = c(
+      "No, I could be a bit more generous" = "Not very generous person",
+      "Yes, I'm a pretty generous person" = "Generous person"
+    )
+  )
+
+```
+
+## Generosity Variables
+**Response Variable:** SpendOnYou - how much money students would spend on themselves if they were awarded $1000.
+
+**Explanatory Variable:** Generous - how generous is the student.
+
+## Observations
+According to the box plot, it looks like the middle 50% of people who would spend more, also tend to be less generous.
+
+```{r}
+favstats(SpendOnYou~Generous, data=Spring2023Dataset)
+```
+## Conclusions
+When looking at the 5 number summary, it showed me that 5x the amount of people marked that they were generous, compared to the people who said they could be more generous. Given that, it is difficult to conclude if the data set is accurate given the higher data from people that are generous.

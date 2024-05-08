@@ -1,0 +1,102 @@
+---
+title: "Cleaning Messy Data Lab"
+author: "Ben Goldstone"
+date: "10/2/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr) # read in dataset
+require(tidyr)
+require(stringr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Part 1
+## Importing Dataset
+```{r}
+# Read in Dataset
+CarPrices = read_csv("~/CSVs/CarPrices.csv")
+head(CarPrices)
+```
+
+## Format Price as Numeric
+```{r}
+CarPrices$Price = parse_number(CarPrices$Price)
+head(CarPrices)
+gf_point(Price~Mileage,data=CarPrices)
+```
+
+## Separate Car into Make and Model
+```{r}
+CarPrices = CarPrices %>% separate(Car,c("Make","Model"),extra="merge",fill="left")
+head(CarPrices)
+gf_point(Price~Mileage|Make,data=CarPrices)
+```
+
+## Replace Subary with Subaru
+```{r}
+CarPrices$Make = str_replace(CarPrices$Make, "Subary","Subaru")
+gf_point(Price~Mileage|Make,data=CarPrices)
+```
+
+## Refining the Scatter Plot
+```{r}
+gf_point(Price/1000~Mileage,data=CarPrices,color=~Make) %>% 
+  gf_facet_wrap(~Make,nrow=2) %>% 
+  gf_theme(legend.position="none") %>% 
+  gf_labs(title="Higher Prices of Cars Lead to More Limited Mileage", y="Price (thousands)")
+```
+
+## Add Other Data Points Refinement
+```{r}
+gf_point(Price/1000~Mileage,data=transform(CarPrices,Make=NULL),color="grey85",alpha=0.4)%>%
+  gf_point(Price/1000~Mileage,data=CarPrices,color=~Make) %>% gf_facet_wrap(~Make,nrow=2) %>% 
+  gf_theme(legend.position="none") %>% 
+  gf_labs(title="Higher Prices of Cars Lead to Less Mileage", y="Price (thousands)") %>% gf_refine(scale_x_reverse())
+
+```
+
+# Part 2
+## Importing and Exploring Dataset
+```{r}
+Music = read_csv("~/CSVs/Music.csv")
+head(Music)
+gf_barh(~Genre|Gender,data=Music)
+```
+
+## Format Genre Column
+```{r}
+NewMusic = Music %>% 
+  # Separates Genre separated by a semicolon.
+  separate(Genre, c("A1","A2","A3","A4","A5","A6","A7"),sep=";") %>%
+  # Collapses A1:A7 into their own rows.
+  gather("DummyGenre","Genre",5:11) %>%
+  # Removes NA values.
+  na.omit() %>%
+  # Removes Platform and Dummy Genre.
+  select(-c("Platform","DummyGenre"))
+head(NewMusic)
+gf_barh(~Genre|Gender,data=NewMusic,fill=~Genre) %>% gf_theme(legend.position="none")
+```
+
+

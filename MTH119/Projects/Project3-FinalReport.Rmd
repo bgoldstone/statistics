@@ -1,0 +1,74 @@
+---
+title: "Project 3 Final Report"
+author: "Benjamin Goldstone"
+date: "April 12th, 2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+# Collection Method and Description
+Using a ball and a bucket both of us did 20 trials with different hands and angles based on a random number from a random number generator to see if there is evidence that one way of throwing a ball is dominant. Each hand/angle combination was assigned a number from 1-4.
+
+1. Left Over
+2. Right Over
+3. Left Under
+4. Right Under
+
+# Variables
+
+Response: Make or Miss
+Explanatory: Overhand/Underhand and Right Hand/Left Hand
+
+```{r}
+library(readr)
+DataCollectionProject3 <- read_csv("~/Projects/Project 3/DataCollectionProject3.csv")
+head(DataCollectionProject3)
+```
+
+# Hypotheses
+
+H0: pi_left = pi_right
+
+Ha: pi_left < pi_right
+
+
+# Graphs
+
+```{r}
+
+gf_bar(~OverUnder|LeftRight, fill=~MakeMiss, data=DataCollectionProject3, position=position_dodge( ))%>%
+gf_refine(scale_fill_manual(values = c("darkblue","red")))
+
+```
+
+When throwing a ball into a basket, the right hand seems to make it into the basket more than the left hand. 
+
+In addition, when using underhand we made more baskets than when we used overhand.
+
+
+# Proportion Test
+
+```{r}
+tally(MakeMiss~LeftRight, data=DataCollectionProject3)
+prop.test(c(6,8),c(17,23),alternative = "less", conf.level = 0.9)
+
+```
+# Conclusion
+Given a 90% confidence interval, we fail to reject the null hypothesis, due to 0 being included in the interval. With 0 being in the interval, it shows the null hypothesis to be a possibility.
+
+
+We can conclude that there is a no significant difference between what hand you throw a ball with to make a shot.

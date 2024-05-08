@@ -1,0 +1,103 @@
+---
+title: "Map Outlines Lab"
+author: "Ben Goldstone"
+date: "10/23/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(maps)
+require(ggrepel)
+require(usmap)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_map()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Map Packages
+
+```{r}
+
+# States
+states = map_data("state")
+head(states)
+
+gf_polygon(lat~long,data=states,group=~group, color="black",size=0.5) %>%
+  gf_refine(coord_map("conic",lat0=30))
+
+# Counties
+county = map_data("county")
+head(county)
+
+gf_polygon(lat~long,data=county,group=~group, color="black",size=0.05) %>%
+  gf_refine(coord_map("conic",lat0=30))
+
+# Subset Pennsylvania
+penn = map_data("county","pennsylvania")
+head(penn)
+gf_polygon(lat~long,data=penn,group=~group, 
+             color="black",size=0.05,alpha=0.2)
+
+# US Cities
+data("us.cities")
+head(us.cities)
+
+# Population Map of US Cities
+gf_point(lat~long,data=subset(us.cities, country.etc!= "HI" & country.etc != "AK")
+         ,alpha=0.3,size=~pop/1000000) %>%
+  gf_polygon(lat~long,data=county,group=~group, 
+             color="black",size=0.05,alpha=0.2) %>%
+  gf_refine(coord_map("conic",lat0=30)) %>%
+  gf_labs(size="Population\n (Millions)",
+          title="The North East and California are Heavily Populated")
+
+# Overlay US Cities w/ State Labsls
+cities = read.csv("https://raw.githubusercontent.com/plotly/datasets/master/us-cities-top-1k.csv")
+head(cities)
+penn_cities = data=subset(cities, State == "Pennsylvania")
+gf_point(lat~lon, data=penn_cities, size=~Population/1000000, alpha=0.4) %>%
+  gf_polygon(lat~long,data=penn,group=~group, 
+             color="black",size=0.05,alpha=0.2) %>% 
+  gf_labs(size="Population\n (Millions)", 
+          title="\n Philadelphia is the Most Populated City in PA") +
+  geom_text_repel(data = penn_cities, aes(label=City))
+```
+
+# US Map Package
+```{r}
+states2 = us_map(region = "states")
+head(states2)
+
+gf_polygon(y~x,data=states2,group=~group, color="black",size=0.05,alpha=0.2)
+
+# Map by County
+counties2 = us_map(region="county")
+head(counties2)
+
+gf_polygon(y~x,data=counties2,group=~group, color="black",size=0.05,alpha=0.2)
+
+northeast_region = us_map(region="county",include = c(.northeast_region))
+
+
+gf_polygon(y~x,data=northeast_region,group=~group, color="black",size=0.05,alpha=0.2)
+
+```
+
+

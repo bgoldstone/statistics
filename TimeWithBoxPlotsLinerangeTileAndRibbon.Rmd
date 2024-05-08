@@ -1,0 +1,76 @@
+---
+title: "Time with Boxplots, Linerange, Title & Ribbon"
+author: "Ben Goldstone"
+date: "10/18/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(mosaicData)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Part 1: Data Setup
+```{r}
+data("Weather")
+head(Weather)
+```
+
+# Part 2: Boxplots & Multiple Facets
+```{r}
+gf_boxplot(avg_temp~as.factor(month),data=Weather, width = 0.2) %>% 
+  gf_labs(x = "Months", title = "Mumbai has the Most Consistent Temperatures") %>% 
+  gf_facet_grid(city ~ year)
+```
+
+# Part 3: Linerange Plot
+```{r}
+gf_linerange(low_temp+high_temp ~ date| city ~ ., data=Weather,
+             color = ~(low_temp+high_temp)/2) %>%
+  gf_refine(scale_color_gradientn(colors = rev(rainbow(5)))) %>%
+  gf_labs(color = " Mid\nTemp", title = "Chicago has the Coldest Temperatures")
+```
+
+# Part 4: A Year in Tiles
+```{r}
+gf_tile(month~day, data = subset(Weather, year=2016), fill=~avg_temp) %>% 
+  gf_facet_grid(city ~ .) %>%
+  gf_refine(scale_fill_gradientn(colors = rev(rainbow(5))),
+            scale_y_reverse(breaks = c(3,6,9))) %>%
+  gf_labs(title="Chicago and Bejing Have Similar Temps Throughout the Year")
+```
+
+# Part 5: Highlighted Ribbon
+```{r}
+# Original Graph
+gf_ribbon(low_temp + high_temp ~ date, 
+          data = transform(Weather,city = NULL), fill = "Gray85") %>%
+# City Graphs
+gf_ribbon(low_temp+high_temp~date|city, data=Weather, fill=~city) %>%
+  gf_theme(theme_classic()) %>%
+  gf_theme(legend.position="none") %>%
+  # %b = Month %y = 2 Digit Year
+  gf_refine(scale_x_date(date_breaks = "8 months", date_labels = "%b %y")) %>%
+  gf_labs(x = "Date", y = "Temps", title = "Bejing and Chicago Have Huge Variations In Temperatures")
+```
+
+

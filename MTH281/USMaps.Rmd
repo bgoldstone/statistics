@@ -1,0 +1,107 @@
+---
+title: "US Maps"
+author: "Ben Goldstone"
+date: "11/6/2023"
+output: 
+  pdf_document:
+    fig_height: 5
+    fig_width: 7
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(socviz)
+require(maps)
+require(statebins)
+require(readr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_map()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+```{r}
+# Election Data
+data("election")
+head(election)
+
+# State Data
+States = map_data("state")
+head(States)
+
+election$region = tolower(election$state)
+
+FullData = left_join(States,election)
+head(FullData)
+
+# County Data
+head(county_map)
+head(county_data)
+all_county_data = left_join(county_map,county_data)
+# all_county_data = all_county_data %>% 
+#   group_by(state,group,name) %>%
+#   mutate(StatePopulation = sum(pop))
+head(all_county_data)
+
+poliSciDataset = read_csv("~/CSVs/PoliSciState.csv")
+# Replace "RhodeIsland" with "Rhode Island" to fix error.
+poliSciDataset[poliSciDataset == "RhodeIsland"] <- "Rhode Island"
+head(poliSciDataset)
+```
+
+```{r}
+# Graph 1
+gf_polygon(lat~long,data=FullData,group=~group,fill=~vote_margin/100000,color="grey50",size=0.05) %>%
+  gf_theme(theme_map()) %>% 
+  gf_refine(coord_equal())%>%
+  gf_theme(legend.position="bottom") %>%
+  gf_labs(fill="Votes (in hundred-thousands)", title="\n\tCalifornia Has the Highest Vote Margin in the 2016 Election")
+
+# Graph 2
+gf_polygon(lat~long,data=FullData,group=~group,fill=~party,color="grey50",size=0.05) %>%
+  gf_theme(theme_map()) %>% 
+  gf_refine(scale_fill_manual(values = c("royalblue","red")),coord_equal()) %>%
+  gf_labs(fill="Party", title="\n\tThe South East Votes Primarily Republican")
+
+# Graph 3
+gf_polygon(lat~long,data=all_county_data,group=~group,fill=~pop/1000000,color="grey50",size=0.05) %>%
+  gf_refine(coord_equal()) %>%
+  gf_theme(legend.position="top") %>%
+  gf_labs(fill="Population (in Millions)",title="\nLA County has a Population of near 10 Million")
+
+# Graph 4
+gf_polygon(lat~long,data=subset(all_county_data, state == "FL"), fill=~female, group=~group) %>%
+  gf_refine(coord_equal(), scale_fill_distiller(palette = "RdBu")) %>%
+  gf_labs(title="\nFloridia is Predominately Female", fill="Female")
+
+# Graph 5
+statebins(poliSciDataset, state_col="state", value="ba_or_more") %>%
+  gf_refine(coord_equal(), scale_fill_gradientn(colors = rainbow(2))) %>%
+  gf_labs(title="\nMassachussets has the most individuals with a
+Bachelors Degree or More",
+          fill="Bachelors or More (percentage)") %>%
+  gf_theme(legend.position="bottom")
+
+
+# Graph 6
+statebins(poliSciDataset, state_col="state", value="obama_win12",
+          ggplot2_scale_function = scale_fill_discrete) %>%
+  gf_labs(title="\tObama Wins in North East in the 2012 Election",
+          fill="Obama State Wins in 2012")
+
+
+```
+
+

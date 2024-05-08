@@ -1,0 +1,43 @@
+---
+title: "Matched Pairs Lab"
+author: Ben Goldstone""
+date: "4/5/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+```{r}
+library(readr)
+Circles930 <- read_csv("~/CSVs/Circles930.csv")
+head(Circles930)
+```
+```{r}
+gf_histogram(~PrimaryHand - SecondaryHand, data=Circles930)
+gf_boxplot(~PrimaryHand - SecondaryHand, data=Circles930)
+favstats(~PrimaryHand-SecondaryHand, data=Circles930)
+t.test(~PrimaryHand-SecondaryHand, data=Circles930, alternative="less")
+
+# Just for fun
+gf_boxplot(PrimaryFirst~PrimaryHand, data=Circles930)
+gf_boxplot(PrimaryFirst~PrimaryHand|Utensil, data=Circles930)
+
+favstats(PrimaryHand~Utensil, data=Circles930)
+gf_boxplot(Utensil~PrimaryHand, data=Circles930)
+```
+

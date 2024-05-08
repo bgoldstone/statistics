@@ -1,0 +1,20 @@
+"0","tally(MakeMiss~LeftRight, data=DataCollectionProject3)"
+"1","        LeftRight
+"
+"1","MakeMiss"
+"1"," Left"
+"1"," Right"
+"1","
+    Make"
+"1","    6"
+"1","     8"
+"1","
+    Miss"
+"1","   11"
+"1","    15"
+"1","
+"
+"0","tally(MakeMiss~LeftRight, data=DataCollectionProject3, type=""prop"")"
+"2","Error in table(logical2factor(joinFrames(evalF$left, evalF$right, evalF$condition)),  : 
+  all arguments must have the same length
+"

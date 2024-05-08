@@ -1,0 +1,37 @@
+---
+title: "RMarkdown Assignment"
+author: "Ben Goldstone"
+date: "1/18/2023"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Preferred Name
+Ben Goldstone
+
+# Muhlenberg Involvement
+I'm currently a junior majoring in Computer Science. In addition I am a Learning Assistant for Computer Science II, a tutor, a Student Assistant in Media Services, and a Lead Technician in 'Berg Production.
+
+# Sample Job
+
+I have always thought of being a professional technician in the Live Events realm, but will likely be becoming a Software Engineer in the distant future.
+```{r}
+gf_point(births~day_of_year, data=Births78)
+
+```
+

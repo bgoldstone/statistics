@@ -1,0 +1,65 @@
+---
+title: "Exploring Data"
+author: "Ben Goldstone"
+date: "2/6/23"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+```{r}
+library(readr)
+Spring2023Dataset <- read_csv("~/CSVs/Spring2023Dataset.csv")
+head(Spring2023Dataset)
+```
+# Study Location
+**Response Variable:** Study Location
+
+**Explanatory Variable:** Personality
+
+```{r}
+#gf_bar(~StudyLocation|Personality,data=na.omit(Spring2023Dataset))
+gf_barh(~StudyLocation|Personality,data=na.omit(Spring2023Dataset))
+
+```
+
+According to the graphs, the preferred study location seems to be a **Quiet Place** for introverts and extroverts alike.
+
+
+```{r}
+tally(~StudyLocation|Personality, data=na.omit(Spring2023Dataset), format="prop")
+```
+
+I Predicted that extroverted people would prefer a public space and introverted people would prefer quieter spaces. In reality, ~75% of extroverts prefer studying in a quiet place.
+
+# Generosity
+**Response Variable:** Generous
+
+**Explanatory Variable:** Money Spent on yourself
+
+```{r}
+gf_boxplot(SpendOnYou~Generous, fill="darkgreen", data=na.omit(Spring2023Dataset))
+```
+
+The middle 50% of the less generous seem to spend more on themselves than the more generous.
+
+
+```{r}
+favstats(SpendOnYou~Generous, data=na.omit(Spring2023Dataset))
+```
+
+The numerical summaries show that the majority of people in Dr. Davidson's Statistic classes think that they are generous people.

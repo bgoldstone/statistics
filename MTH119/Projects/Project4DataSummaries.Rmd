@@ -1,0 +1,174 @@
+---
+title: "Project 4 Data Summaries"
+author: "Ben Goldstone"
+date: "4/28/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+# Data Set
+```{r}
+library(readr)
+datascience_salaries <- read_csv("~/CSVs/ds_salaries.csv")
+head(datascience_salaries)
+
+```
+# Columns
+Data Science Job Salaries Dataset contains 11 columns, each are:
+
+**work_year:** The year the salary was paid.
+
+**experience_level:** The experience level in the job during the year. (SE:Senior,
+EN:Entry level, EX:Executive level, MI:Mid/Intermediate level)
+
+**employment_type:** The type of employment for the role.
+<!-- CT: Consulting? -->
+
+**job_title:** The role worked in during the year.
+
+**salary:** The total gross salary amount paid.
+
+**salary_currency:** The currency of the salary.
+
+**salary_in_usd:** The salary in USD.
+
+**employee_residence:** Employee's primary country of residence in during the work year as an ISO 3166 country code.
+
+**remote_ratio:** The overall amount of work done remotely.
+
+**company_location:** The country of the employer's main office or contracting branch.
+
+**company_size:** The median number of people that worked for the company during the year.
+
+# Data Source
+This data was sourced from [AI-jobs.net](https://ai-jobs.net/). AI-Jobs.net seems to connect directly to employers for posting information on jobs. This [dataset](https://www.kaggle.com/datasets/ppb00x/credit-risk-customers) is from Kaggle datasets.
+
+The data does not seem to have a direct source for it's data besides specifying that they "Provide a direct link between candidates and employers."
+
+# Experience Level and Salary
+```{r}
+# convert to thousands
+datascience_salaries$salary_in_usd_in_thousands <- datascience_salaries$salary_in_usd/1000
+
+# order and relabel experience_level
+datascience_salaries$experience_level_ordered <- factor(datascience_salaries$experience_level, levels=c("EN","MI","SE","EX"), labels = c("Entry Level", "Mid-Level", "Senior", "Executive"))
+
+# boxplot with axis and legend labels
+gf_boxplot(salary_in_usd_in_thousands~experience_level_ordered, fill=~experience_level_ordered, data=na.omit(datascience_salaries)) + xlab("Experience Levels") + ylab("Salary in USD (in thousands)") + labs(fill = "Experience Levels")
+favstats(salary_in_usd_in_thousands~experience_level_ordered, data=datascience_salaries)
+
+```
+
+In General as your experience level increases, your salary increases. Given the substantial number of outliers in this dataset, we should not run an ANOVA test, but for the sake of practice, we will run one anyway also the Standard-Deviation rule fits an ANOVA test.
+
+```{r}
+experience_model=aov(salary_in_usd~experience_level, data=datascience_salaries)
+summary(experience_model)
+```
+
+Since the P-Value is very small, we can conclude that salaries are greater when you have more experience. In addition, we can run a Tukey Comparisons Test to see how different the salaries are based on the position.
+
+```{r}
+TukeyHSD(experience_model)
+```
+
+
+Given the substantial number of outliers in this dataset, we cannot get a consistent adjusted p-value across the different experience levels.
+
+# Company Size and Salary
+
+```{r}
+datascience_salaries$company_size <- factor(datascience_salaries$company_size, levels=c("S","M","L"), labels = c("Small", "Medium", "Large"))
+gf_boxplot(salary_in_usd_in_thousands~company_size,fill=~company_size,data=na.omit(datascience_salaries))
+favstats(salary_in_usd_in_thousands~company_size,data=datascience_salaries)
+```
+
+Data Scientists at a medium company seem to generally earn more than those at a small or large company.The Standard-Deviation rule seems to fit and be able to run an ANOVA Test.
+
+```{r}
+size_model=aov(salary_in_usd_in_thousands~company_size,data=datascience_salaries)
+summary(size_model)
+```
+
+Since the P-value is very small, we can conclude that salaries are different across different sizes of companies.
+
+```{r}
+TukeyHSD(size_model)
+```
+
+Given the dataset, it seems the biggest difference in salary is between Medium and Small companies
+
+# Year and Salary
+```{r}
+# gets means and salaries
+means <- favstats(salary_in_usd_in_thousands~work_year, data=datascience_salaries)$mean
+years <- favstats(salary_in_usd_in_thousands~work_year, data=datascience_salaries)$work_year
+
+#puts years into categorical variables
+datascience_salaries$years_cat = as.character(datascience_salaries$work_year)
+
+gf_point(means~years, data=data.frame(years,means))%>%
+  gf_lm() + xlab("Year") + ylab("Mean Salary in USD (in thousands)")
+favstats(salary_in_usd_in_thousands~work_year,data=datascience_salaries)
+gf_point(salary_in_usd_in_thousands~jitter(work_year), data=datascience_salaries, alpha=0.3)%>%
+  gf_lm() + xlab("Year") + ylab("Mean Salary in USD (in thousands)")
+gf_boxplot(salary_in_usd_in_thousands~years_cat, data=datascience_salaries, fill=~years_cat)
+favstats(salary_in_usd_in_thousands~work_year,data=datascience_salaries)
+
+  
+```
+
+Given the data here, it looks like salaries increase each year by around 5-10 thousand dollars.
+
+```{r}
+cor(salary_in_usd_in_thousands~work_year, data=datascience_salaries)
+```
+
+The Correlation between average salary and year is not very strong.
+
+```{r}
+yearModel=lm(salary_in_usd_in_thousands~work_year, data=datascience_salaries)
+summary(yearModel)
+```
+
+A linear Model only accounts for 5% of the data and is not a good fit. I also think if we had more data, there would be more of a trend to see. In addition the pandemic could've brought down salaries.
+
+
+# Remote Ratio and Salary
+```{r}
+# makes remote ratio categorical
+datascience_salaries$remote_ratio_cat <- cut(datascience_salaries$remote_ratio,breaks=c(-100,0,50,100),labels=c("In-Person","Hybrid","Fully Remote"))
+gf_boxplot(salary_in_usd_in_thousands~remote_ratio_cat, fill=~remote_ratio_cat, data=datascience_salaries) + xlab("Remote?") + ylab("Salary in USD (in thousands)") + labs(fill= "Remote?")
+favstats(salary_in_usd_in_thousands~remote_ratio_cat, data=datascience_salaries)
+```
+
+People who work in-person seem to earn more than those who are hybrid. The Standard-Deviation rule seems to fit and be able to run an ANOVA Test.
+
+```{r}
+remote_model=aov(salary_in_usd_in_thousands~remote_ratio_cat, data=datascience_salaries)
+summary(remote_model)
+```
+
+There seems to be a difference between the average salary of those who are remote, hybrid, and in-person.
+
+```{r}
+TukeyHSD(remote_model)
+```
+
+People who are In-Person seem to earn on average $66,000 more than those who are Hybrid.

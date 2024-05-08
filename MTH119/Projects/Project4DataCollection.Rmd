@@ -1,0 +1,62 @@
+---
+title: "Project 4 Data Collection"
+author: "Ben Goldstone"
+date: "4/21/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+# Data Set
+```{r}
+library(readr)
+datascience_salaries <- read_csv("~/CSVs/ds_salaries.csv")
+head(datascience_salaries)
+
+```
+# Columns
+Data Science Job Salaries Dataset contains 11 columns, each are:
+
+**work_year:** The year the salary was paid.
+
+**experience_level:** The experience level in the job during the year. (SE:Senior,
+EN:Entry level, EX:Executive level, MI:Mid/Intermediate level)
+
+**employment_type:** The type of employment for the role.
+<!-- CT: Consulting? -->
+
+**job_title:** The role worked in during the year.
+
+**salary:** The total gross salary amount paid.
+
+**salary_currency:** The currency of the salary.
+
+**salaryinusd:** The salary in USD.
+
+**employee_residence:** Employee's primary country of residence in during the work year as an ISO 3166 country code.
+
+**remote_ratio:** The overall amount of work done remotely.
+
+**company_location:** The country of the employer's main office or contracting branch.
+
+**company_size:** The median number of people that worked for the company during the year.
+
+# Data Source
+This data was sourced from [AI-jobs.net](https://ai-jobs.net/). AI-Jobs.net seems to connect directly to employers for posting information on jobs. This [dataset](https://www.kaggle.com/datasets/ppb00x/credit-risk-customers) is from Kaggle datasets.
+
+The data does not seem to have a direct source for it's data besides specifying that they "Provide a direct link between candidates and employers."

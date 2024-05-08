@@ -1,0 +1,87 @@
+---
+title: "Refinement Practice Lab"
+author: "Ben Goldstone"
+date: "9/11/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+library(readr)
+require(Lock5Data)
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(stringr)
+require(forcats)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Import Taylor Swift Data and Mutate
+```{r}
+
+ts <- read_csv("~/CSVs/ts.csv")
+head(ts)
+
+
+tally(~album,data=ts)
+
+
+ts = ts %>% mutate(Keep = ifelse(str_detect(album,"ersion"),"Yes","No"),
+                   ShortAlbum = gsub("[(].*","",album))
+
+```
+
+## Popularity Album Boxplot
+```{r}
+head(ts)
+gf_boxplot(fct_reorder(ShortAlbum, release_date)~popularity,data=subset(ts,Keep == "Yes")) %>% gf_text(fct_reorder(ShortAlbum,release_date)~90,label=~release_date) %>% gf_theme(theme_classic()) %>% gf_labs(y="Album",x="Popularity",title="Popularity of Taylor Swift Albums")
+
+```
+# Import UFO Dataset
+```{r}
+ufo <- read_csv("~/CSVs/ufo.csv")
+head(ufo)
+colnames(ufo)[12] = "SightedHour"
+colnames(ufo)
+```
+
+## UFOs Observed Histogram
+```{r}
+gf_histogram(~SightedHour, data=ufo) %>% 
+  gf_vline(xintercept = 18, linetype = "dashed", color="gray30") %>%
+  gf_text(y=7500,x=18,hjust=1.5,label="6 pm") %>% 
+  gf_theme(theme_bw()) %>%
+  gf_labs(x="Hour UFO was Sighted",y="Number of UFOs Sighted",title="Most UFOs are Observed after 6 pm")
+```
+
+# Import StudentSurvey
+```{r}
+require(Lock5Data)
+data("StudentSurvey")
+head(StudentSurvey)
+```
+
+## Student Awards
+```{r}
+StudentSurvey$Year = factor(StudentSurvey$Year, levels=c("FirstYear","Sophomore","Junior","Senior"))
+gf_bar(~Award,data=na.omit(StudentSurvey), fill=~Award,show.legend = FALSE) %>% 
+  gf_facet_wrap(~Year, nrow=1) %>% 
+  gf_theme(theme_bw()) %>% gf_labs(title="Awards Received by Class Year",y="Number of Awards Received")
+```
+

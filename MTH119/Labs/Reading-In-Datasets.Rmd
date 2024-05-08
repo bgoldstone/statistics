@@ -1,0 +1,41 @@
+---
+title: "Reading In Datasets"
+author: "Ben Goldstone"
+date: "Jan 25, 2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+require(Lock5Data)
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Reading in Textbook Data
+
+
+```{r}
+data("StudentSurvey")
+head(StudentSurvey)
+
+```
+It looks like this dataset is demograpic data on students based on academic performance, family, health, and awards.
+
+# Reading in a csv file dataset
+```{r}
+library(readr)
+Quarterbacks <- read_csv("CSVs/Quarterbacks.csv")
+head(Quarterbacks)
+```
+This dataset looks like it is collecting data on on NFL Quarterbacks

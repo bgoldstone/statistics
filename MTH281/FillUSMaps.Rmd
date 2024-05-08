@@ -1,0 +1,114 @@
+---
+title: "Fill US Maps"
+author: "Ben Goldstone"
+date: "10/30/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(socviz)
+require(maps)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_map()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Filled US Maps
+```{r}
+
+# Election Data
+data("election")
+head(election)
+
+# State Data
+States = map_data("state")
+head(States)
+
+election$region = tolower(election$state)
+
+FullData = left_join(States,election)
+head(FullData)
+
+
+```
+
+```{r}
+# Graph 1
+gf_polygon(lat~long,data=FullData,group=~group,fill=~winner,color="grey50",size=0.05) %>%
+  gf_theme(theme_map()) %>% 
+  gf_refine(scale_fill_manual(values = c("royalblue","red"))) %>%
+  gf_labs(fill="Winner", title="\n\tTrump Wins the 2016 Election")
+
+# Graph 2
+gf_polygon(lat~long,data=FullData,group=~group,fill=~total_vote/100000,color="grey50",size=0.05) %>%
+  gf_theme(theme_map()) %>% 
+  gf_refine(scale_fill_gradient2(low="gray30", mid="gray",high="black"),
+            coord_equal())%>%
+  gf_theme(legend.position="bottom") %>%
+  gf_labs(fill="Votes (in hundred-thousands)", title="\n\tCalifornia Has the Most Votes in the 2016 Election") 
+
+# Graph 3
+
+head(county_map)
+head(county_data)
+all_county_data = left_join(county_map,county_data)
+head(all_county_data)
+
+
+gf_polygon(lat~long,data=all_county_data, group=~group,fill=~winner)%>% 
+  gf_refine(scale_fill_manual(values = c("royalblue","red"))) %>%
+  gf_labs(fill="Winner", title="\n\tTrump Wins the 2016 Election")
+
+# Graph 4
+gf_polygon(lat~long,data=all_county_data, group=~group,fill=~travel_time)%>%
+  gf_refine(scale_fill_distiller(direction=1,limits=c(0,50), breaks = c(0,5,10,15,20,25,30,35,40,45,50),na.value="red")) %>%
+  gf_labs(fill="Travel Times", title="\n\tAlaska has shorter travel times")
+
+# Graph 5
+require(plotly)
+california = subset(all_county_data, state == "CA")
+head(california)
+gf_polygon(lat~long,data=california,group=~group, fill=~hh_income) %>%
+  gf_refine(coord_equal()) %>%
+  gf_labs(fill="Household Income", title="\n\tSan Mateo County has the Highest Household
+        Income in California")
+
+cali_housing = gf_polygon(lat~long,data=california,group=~group, fill=~hh_income,color=~name) %>%
+  gf_refine(coord_equal())
+# ggplotly(cali_housing)
+```
+
+```{r}
+# Graph 6
+# data("opiates")
+# head(opiates)
+# opiates$state = tolower(opiates$state)
+# opiates
+# States$state = States$region
+# opiates_state = full_join(opiates,States, by="state")
+# opiates_state
+# opiates_state_grouped = opiates_state %>% group_by(year)
+# opiates_state$avg = mean(opiates_state_grouped$deaths)
+# opiates_state_grouped
+# gf_polygon(lat~long|year, data=opiates_state,group=~group, fill=~avg)
+```
+
+
+

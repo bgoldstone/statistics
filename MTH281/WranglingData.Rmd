@@ -1,0 +1,56 @@
+---
+title: "Wrangling Data"
+author: "Ben Goldstone"
+date: "10/6/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr)
+require(forcats)
+require(tidyr)
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+# Import Dataset
+```{r}
+DanceMoves = read_csv("~/CSVs/DanceMoves.csv")
+colnames(DanceMoves)
+DanceMoves2 = gather(DanceMoves,key="Move",value="CanDoDanceMove",2:13)
+DanceMoves2
+
+# Calculate counts by Move and CanDoDanceMove
+counts <- DanceMoves2 %>%
+  count(Move, CanDoDanceMove)
+
+# Filter data to include counts above a threshold (e.g., 30)
+filtered_counts = counts %>%
+  filter(n > 40)
+
+# Filter the original data based on the filtered counts
+DanceMoves2_filtered <- DanceMoves2 %>%
+  filter(Move %in% filtered_counts$Move)
+
+
+gf_bar(~CanDoDanceMove, data=DanceMoves2_filtered, fill=~CanDoDanceMove) %>% 
+  gf_facet_wrap(~Move, ncol=2) %>% gf_labs(title="Many Muhlenberg Students can do the NaeNae and
+Whip but are not able to Tango", x="Can the Participant Do the Dance Move?", 
+    y="Count") %>% gf_theme(legend.position="none")
+```

@@ -1,0 +1,76 @@
+---
+title: "Regression Computer Lab"
+author: "Ben Goldstone"
+date: "2/10/23"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+# Import Data
+
+```{r}
+library(readr)
+Spring2023Dataset <- read_csv("~/CSVs/Spring2023Dataset.csv")
+head(Spring2023Dataset)
+```
+# Texts Sent and Texts Received 
+```{r}
+gf_point(TextsReceived~TextsSent,data=Spring2023Dataset,alpha=0.3) %>%
+  gf_lm()
+
+```
+
+# Observation
+The relationship between texts received and texts sent seem to fit the line with a positive strong correlation.
+
+
+# R Calculations
+```{r}
+# r
+cor(TextsReceived~TextsSent,data=na.omit(Spring2023Dataset))
+# r^2 as a percentage
+(cor(TextsReceived~TextsSent,data=na.omit(Spring2023Dataset))^2)*100
+
+
+```
+
+Text sent accounted for 83% of the variability in the amount of texts sent.
+
+# Linear Model
+```{r}
+  model=lm(TextsReceived~TextsSent,data=na.omit(Spring2023Dataset))
+  summary(model)
+```
+
+# Linear Model Context
+For every additional 1 text sent, we can expect an additional 1.07 text received. For 0 texts sent, we can expect 3.89 texts received.
+
+```{r}
+slope = 1.07061
+intercept = 3.88943
+response = 300*slope + intercept
+
+response
+```
+
+# Prediction
+Since sending 300 texts is outside of the range of 0 to 220, we cannot be confident in the result we receive.
+
+# Residual Analysis
+For the one person who sent 100 texts and received 250 texts, the residual would be high compared to the majority of the other points since it is about 125 texts above the linear regression line. Since the residual is above the line, it should be positive.

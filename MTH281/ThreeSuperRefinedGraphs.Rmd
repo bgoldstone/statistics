@@ -1,0 +1,108 @@
+---
+title: "Three Super Refined Graphs"
+author: "Ben Goldstone"
+date: "9/29/2023"
+output:
+  pdf_document:
+    fig_height: 7
+    fig_width: 7
+  html_document:
+    fig_height: 3
+    fig_width: 3
+  word_document:
+    fig_height: 3
+    fig_width: 3
+always_allow_html: true
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(ggplot2)
+require(ggeffects)
+require(readr)
+require(plotly)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+theme_set(theme_bw()) # change theme for ggplot2
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+## College Distance Data Import
+[College Distance Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/CollegeDistance.html)
+```{r}
+collegeDistance <- read_csv("~/CSVs/CollegeDistance.csv")
+head(collegeDistance)
+library(dplyr)
+means = data.frame(collegeDistance %>%
+  group_by(gender, ethnicity) %>%
+  summarise(mean_score = mean(score)))
+
+```
+
+
+### Composite test scores and gender
+```{r}
+gf_boxplot(score ~ gender,data = collegeDistance, fill =  ~ gender,alpha = 0.75) %>% 
+  gf_facet_wrap( ~ ethnicity, nrow = 3, ncol = 2) %>%
+  gf_labs(title="Gender and Ethnicity Correlate to Different Average Test Scores",
+    x="Gender",y="Scores") +
+  geom_violin(alpha = 0.4, color = "grey30") +
+  geom_text(data = means, aes(x = gender, y = mean_score, label = sprintf("Mean:\n%.2f", 
+    mean_score), color = gender),
+    position = position_dodge(width = 0.8), vjust=-3, hjust=2, size=3)
+```
+
+
+## China Income Data Import
+[China Income Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/ChinaIncome.html)
+```{r}
+ChinaIncome <- read_csv("~/CSVs/ChinaIncome.csv")
+head(ChinaIncome)
+```
+
+### Construction Income over Time
+```{r}
+const_income_color_sceme = c("TRUE" = "cyan3", "FALSE" = "coral1")
+const_income_above_1000 = subset(ChinaIncome,constructionIncome > 1000)
+const_income_below_1000 = subset(ChinaIncome,constructionIncome <= 1000)
+gf_point(constructionIncome~year,data=ChinaIncome,color = ~ (constructionIncome > 1000)) %>%
+  gf_line(constructionIncome~year, data=const_income_above_1000, 
+          color=const_income_color_sceme["TRUE"]) %>%
+  gf_line(constructionIncome~year, data=const_income_below_1000, 
+          color=const_income_color_sceme["FALSE"]) %>% 
+  gf_labs(title="Construction Income Shifts to a Linear Trend After 1982", 
+          y="Construction Income", x="Year") %>%
+  gf_theme(legend.position="none") + 
+  # Sets colors based on True or False Condition
+  scale_color_manual(
+    values = const_income_color_sceme) +
+  # Sets legend header
+  labs(color="Construction Income")
+```
+
+### Industry Income and Agriculture Income
+```{r}
+
+# Sets color for industries
+industry = "blue"
+agriculture="darkgreen"
+
+# Plots lines for industry and agriculture layered
+ind_agr_plot = gf_line(industryIncome~year,data=ChinaIncome,color=industry) %>% 
+  gf_line(agricultureIncome~year,data=ChinaIncome,color=agriculture) %>%
+
+# Puts "Industry" and "Agriculture" text on plot with the corresponding color
+# wish I could make the font thinner or more spread out...
+gf_text(x=1988,y=4750,label="industry",color=industry,hjust = 1.2) %>% 
+  gf_text(x=1988,y=500,color=agriculture,label="agriculture", hjust=1.2) %>%
+  gf_labs(title="Industry Income Surpases Agricultural Income After 1952",
+          x="Year",y="Income")
+ind_agr_plot
+# ggplotly(ind_agr_plot)
+```

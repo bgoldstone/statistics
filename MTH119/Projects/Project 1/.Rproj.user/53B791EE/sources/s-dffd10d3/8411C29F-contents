@@ -1,0 +1,74 @@
+---
+title: "Statistical Analysis Data Collection Project 1"
+author: "Benjamin Goldstone, Dina Maltser, Eleanor Raff, Faith Fezenko"
+date: "2/3/23"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+# Question of Interest
+As college students ourselves, we recognize how expensive college can be, and also how much the cost of college tuition varies across different 4-year colleges. Therefore, we wanted to compare which factors influence the tuition cost of 4-year undergraduate degrees across the United States. 
+
+# Variables
+## Response Variable:
+**Tuition:** Cost (in U.S. dollars) of tuition at 4-year undergraduate programs at colleges across the United States. For public colleges, the out-of-state tuition price was used.
+
+## Explanatory Variables:
+
+**Public/Private:** Whether the college was subsidized by a particular state or privately owned.
+
+**Undergraduate Enrollment:** The number of students currently pursuing an undergraduate degree at each college.
+
+**Acceptance Rate:** The proportion of incoming first year students who applied to a particular college that were accepted, often looked at as a measure of academic prestige. 
+
+**Number of Majors:** the number of four-year degree offerings at a particular college.
+
+# Data Collection Method
+We began by searching for a list of all 4-year colleges in the United States (the list used was from [4icu.org](https://www.4icu.org/us/a-z/)). Then, we followed the numbers assigned to each college in the online list, which was sorted to some extent by academic prestige, and entered those numbers (1-1762) into a random number generator. We ran the random number generator to randomly select 50 numbers, then matched each number with the college it represented on the list. When the random number generator selected a college that only offered master's degree programs, we discarded that result and randomly selected another number. Each group member was then assigned one variable to collect results on for the 50 colleges selected. 
+
+
+```{r}
+library(readr)
+StatsProject1 <- read_csv(
+  "StatsProjectCollegeData.csv",
+  col_types = cols(
+    `NameOfCollege` = col_character(),
+    `TuitionPrice (out of state)` = col_integer(),
+    `PublicPrivate` = col_character(),
+    `SchoolSize` = col_integer(),
+    `AcceptanceRate` = col_double(),
+    `NumberOfMajors` = col_integer()
+  )
+)
+head(StatsProject1)
+nrow(StatsProject1)
+
+```
+# Graphs
+
+## Public vs Private School Tuition
+
+
+```{r}
+gf_boxplot(TuitionPrice~PublicPrivate, data=StatsProject1,fill=~PublicPrivate)
+favstats(TuitionPrice~PublicPrivate,data=StatsProject1)
+```
+### Observations
+Given the public and private college prices, I was expecting that a private school would be more expensive than a public option. Given this data, I can estimate that private colleges are approximately two times more expensive than public colleges.
+

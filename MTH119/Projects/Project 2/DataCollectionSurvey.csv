@@ -1,0 +1,229 @@
+FoodChoiceInfluencers,FrequencyOfRestaurantsOrTakeout,NutritionalValueConsideration,EnvironmentalImpactConsideration,CostConsideration
+Taste,Once per week,Sometimes,Somewhat important,8
+ Price,Once per week,Sometimes,Somewhat important,8
+ Convenience,Once per week,Sometimes,Somewhat important,8
+ Health,Once per week,Sometimes,Somewhat important,8
+Taste,A few times per month,Always,Very important,4
+ Price,A few times per month,Always,Very important,4
+ Convenience,A few times per month,Always,Very important,4
+ Health,A few times per month,Always,Very important,4
+ Availability,A few times per month,Always,Very important,4
+Taste,Once per week,Always,Very important,4
+ Price,Once per week,Always,Very important,4
+ Convenience,Once per week,Always,Very important,4
+ Health,Once per week,Always,Very important,4
+ Personal beliefs or values,Once per week,Always,Very important,4
+ Availability,Once per week,Always,Very important,4
+ Recommendations from friends or family,Once per week,Always,Very important,4
+Taste,A few times per month,Always,Somewhat important,7
+ Price,A few times per month,Always,Somewhat important,7
+ Health,A few times per month,Always,Somewhat important,7
+ Availability,A few times per month,Always,Somewhat important,7
+ Recommendations from friends or family,A few times per month,Always,Somewhat important,7
+Taste,A few times per month,Often,Somewhat important,8
+ Price,A few times per month,Often,Somewhat important,8
+ Convenience,A few times per month,Often,Somewhat important,8
+ Health,A few times per month,Often,Somewhat important,8
+Taste,Multiple times per week,Often,Somewhat important,8
+ Price,Multiple times per week,Often,Somewhat important,8
+ Health,Multiple times per week,Often,Somewhat important,8
+ Availability,Multiple times per week,Often,Somewhat important,8
+ Recommendations from friends or family,Multiple times per week,Often,Somewhat important,8
+ Dietary restrictions or food allergies,Multiple times per week,Often,Somewhat important,8
+Taste,A few times per month,Sometimes,Not important at all,10
+ Price,A few times per month,Sometimes,Not important at all,10
+ Convenience,A few times per month,Sometimes,Not important at all,10
+ Availability,A few times per month,Sometimes,Not important at all,10
+Taste,Rarely,Often,Not very important,8
+ Price,Rarely,Often,Not very important,8
+ Personal beliefs or values,Rarely,Often,Not very important,8
+ Dietary restrictions or food allergies,Rarely,Often,Not very important,8
+Taste,Once per week,Rarely,Not very important,3
+ Convenience,Once per week,Rarely,Not very important,3
+ Availability,Once per week,Rarely,Not very important,3
+Taste,Once per week,Rarely,Not important at all,10
+ Price,Once per week,Rarely,Not important at all,10
+Taste,Once per week,Often,Not very important,5
+ Convenience,Once per week,Often,Not very important,5
+ Health,Once per week,Often,Not very important,5
+Taste,Once per week,Always,Not very important,3
+ Price,Once per week,Always,Not very important,3
+ Health,Once per week,Always,Not very important,3
+ Availability,Once per week,Always,Not very important,3
+ Recommendations from friends or family,Once per week,Always,Not very important,3
+Taste,Rarely,Sometimes,Not very important,5
+ Price,Rarely,Sometimes,Not very important,5
+ Convenience,Rarely,Sometimes,Not very important,5
+ Health,Rarely,Sometimes,Not very important,5
+ Personal beliefs or values,Rarely,Sometimes,Not very important,5
+ Availability,Rarely,Sometimes,Not very important,5
+ Dietary restrictions or food allergies,Rarely,Sometimes,Not very important,5
+Taste,Rarely,Sometimes,Not very important,4
+ Price,Rarely,Sometimes,Not very important,4
+ Convenience,Rarely,Sometimes,Not very important,4
+ Health,Rarely,Sometimes,Not very important,4
+ Availability,Rarely,Sometimes,Not very important,4
+ Recommendations from friends or family,Rarely,Sometimes,Not very important,4
+ Dietary restrictions or food allergies,Rarely,Sometimes,Not very important,4
+Taste,A few times per month,Sometimes,Not very important,5
+ Price,A few times per month,Sometimes,Not very important,5
+ Convenience,A few times per month,Sometimes,Not very important,5
+ Health,A few times per month,Sometimes,Not very important,5
+ Personal beliefs or values,A few times per month,Sometimes,Not very important,5
+ Availability,A few times per month,Sometimes,Not very important,5
+ Recommendations from friends or family,A few times per month,Sometimes,Not very important,5
+ Dietary restrictions or food allergies,A few times per month,Sometimes,Not very important,5
+ Advertising or marketing,A few times per month,Sometimes,Not very important,5
+Taste,Once per week,Rarely,Not very important,6
+ Price,Once per week,Rarely,Not very important,6
+ Convenience,Once per week,Rarely,Not very important,6
+ Availability,Once per week,Rarely,Not very important,6
+Taste,Once per week,Often,Not very important,5
+ Price,Once per week,Often,Not very important,5
+ Convenience,Once per week,Often,Not very important,5
+ Health,Once per week,Often,Not very important,5
+ Availability,Once per week,Often,Not very important,5
+Taste,Multiple times per week,Rarely,Not important at all,9
+ Price,Multiple times per week,Rarely,Not important at all,9
+ Convenience,Multiple times per week,Rarely,Not important at all,9
+ Availability,Multiple times per week,Rarely,Not important at all,9
+ Recommendations from friends or family,Multiple times per week,Rarely,Not important at all,9
+Price,A few times per month,Often,Somewhat important,7
+ Availability,A few times per month,Often,Somewhat important,7
+ Advertising or marketing,A few times per month,Often,Somewhat important,7
+Taste,Multiple times per week,Sometimes,Not important at all,4
+ Price,Multiple times per week,Sometimes,Not important at all,4
+ Health,Multiple times per week,Sometimes,Not important at all,4
+ Recommendations from friends or family,Multiple times per week,Sometimes,Not important at all,4
+ Dietary restrictions or food allergies,Multiple times per week,Sometimes,Not important at all,4
+Taste,Once per week,Always,Not very important,3
+ Health,Once per week,Always,Not very important,3
+ Recommendations from friends or family,Once per week,Always,Not very important,3
+Taste,Once per week,Always,Not very important,3
+ Health,Once per week,Always,Not very important,3
+ Recommendations from friends or family,Once per week,Always,Not very important,3
+Taste,Rarely,Often,Not very important,8
+ Price,Rarely,Often,Not very important,8
+ Health,Rarely,Often,Not very important,8
+Taste,A few times per month,Sometimes,Somewhat important,4
+ Convenience,A few times per month,Sometimes,Somewhat important,4
+ Health,A few times per month,Sometimes,Somewhat important,4
+ Recommendations from friends or family,A few times per month,Sometimes,Somewhat important,4
+Taste,A few times per month,Sometimes,Not very important,7
+ Price,A few times per month,Sometimes,Not very important,7
+ Convenience,A few times per month,Sometimes,Not very important,7
+ Health,A few times per month,Sometimes,Not very important,7
+ Availability,A few times per month,Sometimes,Not very important,7
+ Dietary restrictions or food allergies,A few times per month,Sometimes,Not very important,7
+Taste,Multiple times per week,Always,Somewhat important,7
+ Price,Multiple times per week,Always,Somewhat important,7
+ Convenience,Multiple times per week,Always,Somewhat important,7
+ Health,Multiple times per week,Always,Somewhat important,7
+ Personal beliefs or values,Multiple times per week,Always,Somewhat important,7
+ Availability,Multiple times per week,Always,Somewhat important,7
+ Recommendations from friends or family,Multiple times per week,Always,Somewhat important,7
+Taste,Multiple times per week,Sometimes,Somewhat important,4
+ Health,Multiple times per week,Sometimes,Somewhat important,4
+ Availability,Multiple times per week,Sometimes,Somewhat important,4
+ Recommendations from friends or family,Multiple times per week,Sometimes,Somewhat important,4
+ Dietary restrictions or food allergies,Multiple times per week,Sometimes,Somewhat important,4
+Taste,Rarely,Sometimes,Not very important,7
+ Price,Rarely,Sometimes,Not very important,7
+ Convenience,Rarely,Sometimes,Not very important,7
+ Health,Rarely,Sometimes,Not very important,7
+Taste,Once per week,Sometimes,Not very important,5
+ Price,Once per week,Sometimes,Not very important,5
+ Convenience,Once per week,Sometimes,Not very important,5
+ Health,Once per week,Sometimes,Not very important,5
+Taste,A few times per month,Sometimes,Not very important,7
+ Price,A few times per month,Sometimes,Not very important,7
+ Availability,A few times per month,Sometimes,Not very important,7
+ Recommendations from friends or family,A few times per month,Sometimes,Not very important,7
+Taste,A few times per month,Often,Somewhat important,7
+ Price,A few times per month,Often,Somewhat important,7
+ Health,A few times per month,Often,Somewhat important,7
+ Dietary restrictions or food allergies,A few times per month,Often,Somewhat important,7
+Taste,A few times per month,Often,Somewhat important,8
+ Convenience,A few times per month,Often,Somewhat important,8
+ Availability,A few times per month,Often,Somewhat important,8
+ Dietary restrictions or food allergies,A few times per month,Often,Somewhat important,8
+Taste,Multiple times per week,Sometimes,Not very important,7
+ Price,Multiple times per week,Sometimes,Not very important,7
+ Convenience,Multiple times per week,Sometimes,Not very important,7
+ Health,Multiple times per week,Sometimes,Not very important,7
+ Personal beliefs or values,Multiple times per week,Sometimes,Not very important,7
+ Availability,Multiple times per week,Sometimes,Not very important,7
+ Recommendations from friends or family,Multiple times per week,Sometimes,Not very important,7
+ Advertising or marketing,Multiple times per week,Sometimes,Not very important,7
+Taste,A few times per month,Always,Somewhat important,5
+ Price,A few times per month,Always,Somewhat important,5
+ Convenience,A few times per month,Always,Somewhat important,5
+ Health,A few times per month,Always,Somewhat important,5
+ Availability,A few times per month,Always,Somewhat important,5
+Taste,A few times per month,Sometimes,Somewhat important,7
+ Price,A few times per month,Sometimes,Somewhat important,7
+ Convenience,A few times per month,Sometimes,Somewhat important,7
+ Availability,A few times per month,Sometimes,Somewhat important,7
+Taste,Rarely,Always,Not very important,5
+ Price,Rarely,Always,Not very important,5
+ Convenience,Rarely,Always,Not very important,5
+ Health,Rarely,Always,Not very important,5
+ Availability,Rarely,Always,Not very important,5
+ Dietary restrictions or food allergies,Rarely,Always,Not very important,5
+Taste,Once per week,Never,Not very important,7
+ Price,Once per week,Never,Not very important,7
+ Convenience,Once per week,Never,Not very important,7
+ Availability,Once per week,Never,Not very important,7
+ Recommendations from friends or family,Once per week,Never,Not very important,7
+ Advertising or marketing,Once per week,Never,Not very important,7
+Health,Once per week,Sometimes,Not very important,1
+ Dietary restrictions or food allergies,Once per week,Sometimes,Not very important,1
+Taste,Once per week,Always,Somewhat important,6
+ Convenience,Once per week,Always,Somewhat important,6
+ Health,Once per week,Always,Somewhat important,6
+ Personal beliefs or values,Once per week,Always,Somewhat important,6
+ Recommendations from friends or family,Once per week,Always,Somewhat important,6
+Taste,Multiple times per week,Always,Not very important,3
+ Health,Multiple times per week,Always,Not very important,3
+Taste,A few times per month,Rarely,Not very important,4
+ Convenience,A few times per month,Rarely,Not very important,4
+ Availability,A few times per month,Rarely,Not very important,4
+Taste,A few times per month,Always,Somewhat important,7
+ Price,A few times per month,Always,Somewhat important,7
+ Convenience,A few times per month,Always,Somewhat important,7
+ Health,A few times per month,Always,Somewhat important,7
+Taste,A few times per month,Sometimes,Not very important,8
+ Price,A few times per month,Sometimes,Not very important,8
+ Availability,A few times per month,Sometimes,Not very important,8
+Taste,A few times per month,Sometimes,Not very important,7
+ Price,A few times per month,Sometimes,Not very important,7
+ Convenience,A few times per month,Sometimes,Not very important,7
+ Health,A few times per month,Sometimes,Not very important,7
+ Availability,A few times per month,Sometimes,Not very important,7
+ Recommendations from friends or family,A few times per month,Sometimes,Not very important,7
+ Advertising or marketing,A few times per month,Sometimes,Not very important,7
+Taste,Rarely,Sometimes,Somewhat important,6
+ Price,Rarely,Sometimes,Somewhat important,6
+ Convenience,Rarely,Sometimes,Somewhat important,6
+Taste,A few times per month,Always,Not very important,5
+ Health,A few times per month,Always,Not very important,5
+Taste,Rarely,Always,Not very important,8
+ Price,Rarely,Always,Not very important,8
+ Convenience,Rarely,Always,Not very important,8
+ Health,Rarely,Always,Not very important,8
+ Availability,Rarely,Always,Not very important,8
+Taste,Rarely,Often,Somewhat important,7
+ Price,Rarely,Often,Somewhat important,7
+ Convenience,Rarely,Often,Somewhat important,7
+ Health,Rarely,Often,Somewhat important,7
+ Availability,Rarely,Often,Somewhat important,7
+Taste,Once per week,Sometimes,Very important,8
+ Price,Once per week,Sometimes,Very important,8
+ Convenience,Once per week,Sometimes,Very important,8
+ Health,Once per week,Sometimes,Very important,8
+ Availability,Once per week,Sometimes,Very important,8
+Taste,Once per week,Sometimes,Somewhat important,6
+ Convenience,Once per week,Sometimes,Somewhat important,6
+ Health,Once per week,Sometimes,Somewhat important,6
+ Personal beliefs or values,Once per week,Sometimes,Somewhat important,6
+ Availability,Once per week,Sometimes,Somewhat important,6

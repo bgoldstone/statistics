@@ -1,0 +1,76 @@
+---
+title: "Visualizing Time with Lines & Monthly Titles"
+author: "Ben Goldstone"
+date: "10/16/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(viridis)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Part 1: Simple Line Graph
+
+```{r}
+data("Births2015")
+head(Births2015)
+gf_line(births~date, data=Births2015) %>%
+  gf_refine(coord_cartesian(xlim=c(as.Date("2015-01-01"), as.Date("2015-4-30")))) %>%
+  gf_refine(scale_x_date(date_minor_breaks = "1 week")) %>% gf_labs(title="Most Births Happen in the Beginning of the Week.", x="Time", y="Number of Births")
+```
+
+# Part 2: Multiple Lines - Line Graph
+
+```{r}
+gf_line(births~date, data=Births2015, color=~wday) %>% 
+  gf_labs(title="Most Births Happen During the Week compared to Weekends.", x="Time",
+    y="Number of Births",color="Day of the Week")
+```
+
+# Part 3: Tile by Month
+
+```{r}
+# Added Shift Variable
+Births2015.shift = subset(Births2015,day_of_month==1) %>%
+  mutate(Shift = day_of_week - day_of_month) %>%
+  dplyr::select(month,Shift)
+
+# Joined into new dataset
+new.Births2015 = full_join(Births2015, Births2015.shift) %>%
+  mutate(week_of_month = ceiling((day_of_month + Shift)/7))
+
+head(new.Births2015)
+
+# Change Theme
+theme_set(theme_light())
+
+
+gf_tile(week_of_month ~ wday | factor(month.abb[month],levels=month.abb), data=new.Births2015,
+        fill = ~births, show.legend = FALSE) %>%
+  gf_refine(scale_y_reverse(),scale_fill_viridis(), 
+            scale_x_discrete(labels = function(x) abbreviate (x, minlength=1))) %>%
+  gf_theme(axis.text.y= element_blank(), axis.ticks.y = element_blank()) %>%
+  gf_labs(x="",y="",title="Most Births Happen on Weekdays", subtitle= "With the exception of US Holidays")
+
+```
+

@@ -1,0 +1,125 @@
+---
+title: "Statebins"
+author: "Ben Goldstone"
+date: "10/25/2023"
+output: 
+  pdf_document:
+    fig_height: 6
+    fig_width: 8
+  html_document:
+    fig_height: 6
+    fig_width: 8
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(statebins)
+require(socviz)
+require(readr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Part 1: Continuous Data
+
+```{r}
+data("election")
+head(election)
+
+theme_set(theme_statebins())
+
+statebins(election,state_col="state",value="pct_clinton",round=TRUE) %>%
+  gf_refine(scale_fill_distiller(palette="RdBu",direction=1)) %>%
+   gf_labs(fill="Party Vote Percentage", 
+          title="    DC had the Biggest Percentage of
+  Democratic Votes in the 2016 Election")
+
+
+# Adjust missing values
+statebins(election,state_col="state",value="pct_clinton",round=TRUE) %>%
+  gf_refine(scale_fill_distiller(palette="RdBu",direction=1, na.value="blue",
+    limits = c(0,80), breaks=c(0,20,40,60))) %>%
+   gf_labs(fill="Party Vote", 
+          title="    DC had the Biggest Percentage of
+  Democratic Votes in the 2016 Election")
+
+
+# As Categorical
+new_election = election %>% mutate(new_pct_clinton = cut(pct_clinton,breaks=3, 
+  labels = c("Few", "Some", "Many")))
+
+statebins(new_election,state_col="state",value="new_pct_clinton",round=TRUE,
+          ggplot2_scale_function = scale_fill_brewer) %>%
+  gf_refine(scale_fill_brewer(palette="Blues",direction=1)) %>%
+   gf_labs(fill="Democratic Party Votes", 
+          title="    DC had the Biggest Percentage of
+  Democratic Votes in the 2016 Election")
+```
+
+# Part 2: Discrete Data
+
+```{r}
+statebins(election, state_col="state",value="winner",
+          ggplot2_scale_function = scale_fill_manual, values=c("royalblue","red")) %>%
+  gf_labs(title="2016 Presidential Election Winners by State",fill="Winner")
+
+statebins(election, state_col="state",value="census",
+          ggplot2_scale_function = scale_fill_brewer, palette = "Oranges")
+
+```
+
+
+# Part 3: Explore PoliSci dataset
+```{r}
+# Import Dataset
+poliSciDataset = read_csv("~/CSVs/PoliSciState.csv")
+# Replace "RhodeIsland" with "Rhode Island" to fix error.
+poliSciDataset[poliSciDataset == "RhodeIsland"] <- "Rhode Island"
+head(poliSciDataset)
+# Graph 1
+statebins(poliSciDataset, state_col="state", value="pop2010_hun_thou") %>%
+  gf_labs(title="2010 Population Shows California is the 
+                Most Populated State",
+          fill="Population(in thousands)")
+
+# Graph 2
+statebins(poliSciDataset, state_col="state", value="permit",
+          ggplot2_scale_function = scale_fill_distiller, palette = "Spectral") %>%
+  gf_labs(title="Washington has the Biggest Percentage of 
+People that Would Always Permit Abortion",
+          fill="Always Permit Abortion")
+
+# Graph 3
+statebins(poliSciDataset, state_col="state", value="gun_rank3",
+          ggplot2_scale_function = scale_fill_brewer) %>%
+  gf_labs(title="US Northeast has the Most Restrictive Gun Laws",
+          fill="Gun Ranks")
+
+# Graph 4
+legend_order <- c("Low", "Mid", "High")
+poliSciDataset$religiosity3 <- factor(poliSciDataset$religiosity3, 
+                                      levels = legend_order)
+
+
+statebins(poliSciDataset, state_col="state", value="religiosity3",
+          ggplot2_scale_function = scale_fill_brewer)  %>%
+  gf_refine(scale_fill_brewer(palette="RdBu",direction=-1))%>%
+  gf_labs(title="People in the US Southwest tend to be more
+                          Religious", fill="Religiosity")
+
+
+          
+```
+
+

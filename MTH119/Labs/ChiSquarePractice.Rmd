@@ -1,0 +1,55 @@
+---
+title: "Chi-Square Practice"
+author: "Ben Goldstone"
+date: "4/21/23"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+```{r}
+library(readr)
+Spring2023Dataset <- read_csv("~/CSVs/Spring2023Dataset.csv")
+head(Spring2023Dataset)
+```
+
+```{r}
+gf_bar(~GiveUp|CoffeeFreq,data=na.omit(Spring2023Dataset))
+tal = tally(~GiveUp|CoffeeFreq,data=na.omit(Spring2023Dataset))
+tal
+```
+# Trends
+Of the people who hardly ever drink a lot of Coffee, chose to give up Caffeine. On the opposite extreme, of the people who drink Coffee almost daily, few choose to give up caffeine.
+
+```{r}
+xchisq.test(tal)
+```
+# Problems
+Not all expected counts meet the minimum threshold of 5.
+
+# Calculations
+df = (4-1)*(4-1)=9
+
+
+largest difference is between those who drink coffee almost daily and chose to give up caffeine, which means, in this case, we expected less people to give up coffee than our observed.
+
+
+The Chi-Squared is calculated by adding all of the partial chi-squared (contributions) together.
+
+
+

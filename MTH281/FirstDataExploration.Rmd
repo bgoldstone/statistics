@@ -1,0 +1,102 @@
+---
+title: "FirstDataExploration"
+author: "Ben Goldstone"
+date: "8/30/23"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(forcats)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# First Data Exploration
+```{r}
+library(readr)
+airlines <- read_csv("~/CSVs/airlines.csv")
+head(airlines)
+```
+
+# Flight delays due to weather
+```{r}
+# fct reorder is ordering it by avg num of delays due to weather
+gf_boxplot(fct_reorder(airportCode,numOfDelaysWeather)~numOfDelaysWeather,data=airlines) 
+favstats(numOfDelaysWeather~airportCode,data=airlines)
+```
+
+# Flight delays due to weather ordered by (num of delays over total flights)
+```{r}
+gf_boxplot(fct_reorder(airportCode,numOfDelaysWeather/totalFlights)~numOfDelaysWeather,data=airlines) 
+
+# Subsets
+gf_boxplot(fct_reorder(airportCode,numOfDelaysWeather/totalFlights)~numOfDelaysWeather,data=subset(airlines,totalFlights > 10000 & (airportCode=='PHL' | airportCode=='MCO'))) 
+favstats(numOfDelaysWeather~airportCode,data=airlines)
+```
+
+```{r}
+gf_density_ridges(as.factor(monthNum) ~ numOfDelaysWeather, data = airlines)
+
+
+# adjusting axis
+# scale makes it taller
+# alpha makes it transparent
+gf_density_ridges(
+  as.factor(monthNum) ~ numOfDelaysWeather,
+  data = airlines,
+  scale = 2,
+  alpha = 0.3,
+  fill =  ~ monthNum
+) %>%
+  gf_refine(coord_cartesian(xlim = c(0, 200))) %>%
+  # changes labels
+  gf_labs(
+    x = "Delayed Flights Due to Weather",
+    y = "Month",
+    title = "Delayed Flights for Every Month",
+    subtitle = "Hurricanes are destroying airline flight patterns",
+    fill = "Month\nNumber"
+  )
+
+```
+
+# Density Plots...
+```{r}
+gf_dens(~ minsDelayedSecurity,
+        data = airlines,
+        color = ~ 'security') %>%
+  gf_dens(~ minsDelayedLateAircraft,
+          data = airlines,
+          color = ~ 'aircraft') %>%
+  gf_dens(~ minsDelayedTotal, data = airlines, color =  ~ 'total') %>%
+  
+  gf_refine(coord_cartesian(xlim = c(0, 1500)))
+```
+# Facets
+```{r}
+gf_line(flightsCancelled~monthNum|year,data=subset(airlines,airportCode=='JFK'),color=~monthNum) %>% gf_refine(scale_x_continuous(breaks=c(seq(1:12))))  %>% gf_labs(title='Flights Cancelled at JFK')
+
+gf_line(flightsCancelled~monthNum|year,data=subset(airlines,airportCode=='JFK'),color=~monthNum) %>% gf_refine(scale_x_continuous(breaks=c(3,6,9)))  %>% gf_labs(title='Flights Cancelled at JFK')
+
+
+gf_line(flightsCancelled~monthNum|year,data=subset(airlines,airportCode=='JFK'),color=~monthNum) %>% gf_refine(scale_x_continuous(breaks=c(3,6,9,12)))  %>% gf_labs(title='Flights Cancelled at JFK') %>% gf_facet_wrap(~year)
+```
+

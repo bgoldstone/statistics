@@ -1,0 +1,263 @@
+---
+title: "Portfolio"
+output: 
+  flexdashboard::flex_dashboard:
+    theme:
+      bg: "#101010"
+      fg: "#FDF7F7" 
+      primary: "#194d33"
+      base_font:
+        google: Prompt
+      code_font:
+        google: JetBrains Mono
+    orientation: columns
+    vertical_layout: fill
+    source_code: embed
+---
+
+```{r setup, include=FALSE, cache=TRUE}
+library(flexdashboard)
+require(mosaic)
+require(ggplot2)
+require(readr)
+require(tidyr)
+require(socviz)
+require(maps)
+require(dplyr)
+require(broom)
+require(raster)
+require(viridis)
+require(Lock5Data)
+require(forcats)
+theme_set(theme_bw())
+# Install thematic and un-comment for themed static plots (i.e., ggplot2)
+# thematic::thematic_rmd()
+
+## DATA IMPORTS
+
+#Graph Refinements
+collegeDistance <- read_csv("~/CSVs/CollegeDistance.csv")
+
+#Maps
+data("election")
+election$region = tolower(election$state)
+
+States = map_data("state")
+
+FullData = left_join(States,election)
+
+all_county_data = left_join(county_map,county_data)
+
+#Time
+data("Births2015")
+
+
+#Dashboard
+data("BaseballHits2019")
+BaseballHits2019$Wins <- as.numeric(BaseballHits2019$Wins)
+BaseballHits2019$Team <- as.factor(BaseballHits2019$Team)
+AL = subset(BaseballHits2019, League == "AL")
+NL = subset(BaseballHits2019,League == "NL")
+team_wins = gf_point(Wins~fct_reorder(Team,Wins),data=AL,color=~Team) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Teams")
+```
+Graph Refinements
+=======================================================================
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+### Original Graph
+```{r, cache=TRUE}
+gf_boxplot(score~gender,data=collegeDistance, fill=~gender)
+```
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+### Refined Graph
+```{r, cache=TRUE}
+
+means = data.frame(collegeDistance %>%
+  group_by(gender, ethnicity) %>%
+  summarise(mean_score = mean(score)))
+
+gf_boxplot(score ~ gender,data = collegeDistance, fill =  ~ gender,alpha = 0.75) %>% 
+  gf_facet_wrap( ~ ethnicity, nrow = 3, ncol = 2) %>%
+  gf_labs(title="Gender and Ethnicity Correlate to Different Average Test Scores",
+    x="Gender",y="Scores") +
+  geom_violin(alpha = 0.4, color = "grey30") +
+  geom_text(data = means, aes(x = gender, y = mean_score, label = sprintf("Mean:\n%.2f", 
+    mean_score), color = gender),
+    position = position_dodge(width = 0.8), vjust=-3, hjust=2, size=3)
+```
+
+
+Graphs with Time
+=======================================================================
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+### Montly Tiles
+```{r, cache=TRUE}
+# Added Shift Variable
+Births2015.shift = subset(Births2015,day_of_month==1) %>%
+  mutate(Shift = day_of_week - day_of_month) %>%
+  dplyr::select(month,Shift)
+
+# Joined into new dataset
+new.Births2015 = full_join(Births2015, Births2015.shift) %>%
+  mutate(week_of_month = ceiling((day_of_month + Shift)/7))
+
+
+gf_tile(week_of_month ~ wday | factor(month.abb[month],levels=month.abb), data=new.Births2015,
+        fill = ~births, show.legend = FALSE) %>%
+  gf_refine(scale_y_reverse(),scale_fill_viridis(), 
+            scale_x_discrete(labels = function(x) abbreviate (x, minlength=1))) %>%
+  gf_theme(axis.text.y= element_blank(), axis.ticks.y = element_blank(),theme_light()) %>%
+  gf_labs(x="",y="",title="Most Births Happen on Weekdays", subtitle= "With the exception of US Holidays")
+```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+### Before
+```{r, cache=TRUE}
+gf_line(births~date, data=Births2015) %>%
+  gf_refine(coord_cartesian(xlim=c(as.Date("2015-01-01"), as.Date("2015-4-30")))) %>%
+  gf_refine(scale_x_date(date_minor_breaks = "1 week")) %>% gf_labs(title="Most Births Happen in the Beginning of the Week.", x="Time", y="Number of Births")
+```
+
+### After
+```{r, cache=TRUE}
+gf_line(births~date, data=Births2015, color=~wday) %>% 
+  gf_labs(title="Most Births Happen During the Week compared to Weekends.", x="Time",
+    y="Number of Births",color="Day of the Week")
+```
+
+
+Mapping Data
+=======================================================================
+
+Column {data-width=550}
+-----------------------------------------------------------------------
+
+### Israel Earthquakes Map
+
+```{r, cache=TRUE}
+israel = getData('GADM', country='ISR', level=1)
+israel_map = tidy(israel)
+Earthquake = read_csv("~/CSVs/Earthquake.csv")
+Earthquake = Earthquake %>%
+  rename(LocationName= `Location Name`)
+Earthquake$LocationName = tolower(Earthquake$LocationName)
+ gf_point(Latitude~Longitude,data=subset(Earthquake, grepl("israel",LocationName)), size=1,color="red") %>%
+gf_polygon(lat~long,data=israel_map,group=~group,alpha=0.75) %>%
+  gf_refine(coord_equal()) %>%
+   gf_labs(title="\nMost Earthquakes in the Israel Region\n\tHappen in the West Bank")
+```
+
+Column {data-width=450}
+-----------------------------------------------------------------------
+
+### US Counties
+
+```{r, cache=TRUE}
+gf_polygon(lat~long,data=all_county_data, group=~group,fill=~winner)%>%
+  gf_theme(theme_map()) %>% 
+  gf_refine(scale_fill_manual(values = c("royalblue","red")), coord_equal()) %>%
+  gf_labs(fill="Winner", title="\n\tTrump Wins the 2016 Election")
+clinton_county_votes = nrow(subset(all_county_data %>% dplyr::distinct(name, winner), winner != "Trump"))
+trump_county_votes = nrow(subset(all_county_data %>% dplyr::distinct(name, winner), winner == "Trump"))
+```
+
+### Valuebox1
+
+```{r, cache=TRUE}
+valueBox(format(clinton_county_votes,big.mark=","), caption="Clinton County Wins", color="blue",icon="fa-arrow-down")
+```
+
+### Valuebox2
+```{r, cache=TRUE}
+valueBox(format(trump_county_votes,big.mark=","), caption="Trump County Wins",color="red", icon="fa-arrow-up")
+```
+
+Baseball 2019 Dashboard
+=======================================================================
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### Baseball Hits
+
+```{r, cache=TRUE}
+BaseballHits2019v2 = gather(BaseballHits2019,key="HitTypes",value="HitValue",6:8)
+hits = gf_boxplot(HitValue~HitTypes,data=BaseballHits2019v2,color=~HitTypes) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Hit Types", y="Count")
+ggplotly(hits)
+```
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+
+### Baseball Base Stealing
+```{r, cache=TRUE}
+stolen = gf_point(StolenBases~CaughtStealing,data=BaseballHits2019,color=~League) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Number of Stolen Bases", y="Number of Times Caught Stealing")
+ggplotly(stolen)
+```
+
+
+Column {data-width=175}
+-----------------------------------------------------------------------
+### Stats
+```{r, cache=TRUE}
+valueBox(round(mean(BaseballHits2019$Doubles),2),caption="Average # of Doubles",icon = "fa-hourglass-half",color="lightblue")
+```
+
+### Stats
+```{r, cache=TRUE}
+valueBox(round(mean(BaseballHits2019$Triples),2),caption="Average # of Triples",icon = "fa-fast-forward",color="info")
+```
+
+
+### Stats
+```{r, cache=TRUE}
+valueBox(round(cor(StolenBases~CaughtStealing,data=BaseballHits2019),2),caption="Correlation Between Stealing and Caught Stealing",icon = "fa-line-chart",color = "warning")
+```
+
+### Stats
+```{r, cache=TRUE}
+valueBox(sum(AL$StolenBases),caption="American League # of Stolen Bases",icon = "fa-hand-paper-o",color="danger")
+```
+
+
+### Stats
+```{r, cache=TRUE}
+valueBox(sum(NL$StolenBases),caption="National League # of stolen bases",icon = "fa-hand-paper-o",color="blue")
+```
+
+
+Hightlights
+=======================================================================
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+### Things I Have Learned and Enjoyed
+
+1. How to represent data in the forms of dashboards.
+1. How to wrangle or reorganize data via the gather function.
+1. How to create interactive plots via plotly
+
+
+Column {data-width=500}
+-----------------------------------------------------------------------
+
+### Things I Was Confused About
+
+1. Data over time and how to represent in a graph
+1. Understanding how Datasets in Handbook of Small Datasets was organized

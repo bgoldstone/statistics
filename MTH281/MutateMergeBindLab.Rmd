@@ -1,0 +1,99 @@
+---
+title: "Mutate, Merge, and Bind Lab"
+author: "Ben Goldstone"
+date: "10/4/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(Lock5Data)
+require(forcats)
+require(readr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Part 1: Mutate Practice
+
+##Load in Baseball Dataset
+```{r}
+data("BaseballSalaries2015")
+head(BaseballSalaries2015)
+Baseball2 = BaseballSalaries2015 %>% 
+  group_by(Team) %>% 
+  mutate(TotalSalary = sum(Salary),NumPlayers = n())
+```
+## Graph and Graph Refinements
+```{r}
+gf_linerange(Team~ 0 + TotalSalary,data = Baseball2,size = 3)
+
+gf_linerange(fct_reorder(Team,TotalSalary)~ 0 + TotalSalary, data=Baseball2, size = 3, color = ~NumPlayers > 30) %>% 
+  gf_refine(scale_color_brewer(
+    palette = "Blues", 
+    labels = c("30 or Fewer Players","Over 30 Players"))) %>%
+  gf_theme(legend.position="bottom") %>%
+  gf_labs(y = "Team",x = "Total Team Salary (millions)", title = "Dodgers have a Ridiculous Budget!", color = "Team Size")
+```
+
+# Part 2
+
+## States Dataset
+```{r}
+States1 = read_csv("~/CSVs/States1.csv")
+States2 = read_csv("~/CSVs/States2.csv")
+head(States1)
+head(States2)
+
+TruncatedStates1 = States1[c("State", "Union")]
+
+AllStates = full_join(TruncatedStates1,States2)
+head(AllStates)
+gf_linerange(fct_reorder(State,MinimumWage)~ 0 + MinimumWage, data=na.omit(AllStates), size = 2, color=~MinimumWage >= 13) %>% 
+  gf_labs(y="State",x="MinimumWage", title="Washington, Massachusetts, and California Have the Highest Minimum Wage", color = "Team Size") %>% 
+  gf_refine(scale_color_brewer(
+    palette = 1, 
+    labels = c("Below 13","Above 13"))) %>% 
+  gf_theme(plot.title = element_text(hjust = 0.5))
+```
+
+## Animals Dataset
+```{r}
+Animals4 = read_csv("~/CSVs/Animals4.csv")
+Animals5 = read_csv("~/CSVs/Animals5.csv")
+head(Animals4)
+head(Animals5)
+
+# Animal 4 modifications
+colnames(Animals4)[c(2,3,6)] = c("Lifespan","Gestation","Length")
+Animals4.keep = Animals4 %>% select(Animal,Lifespan,Gestation,Diet,Length)
+colnames(Animals5)[5] = "Length"
+Animals5.keep = Animals5 %>% select(Animal,Lifespan,Gestation,Diet,Length) %>% mutate(Diet = tolower(Diet))
+Only.Animals4 = anti_join(Animals4.keep,Animals5.keep,by="Animal")
+All.Animals = rbind(Only.Animals4,Animals5.keep)
+All.Animals
+gf_boxplot(Length~Diet,data=All.Animals, fill=~Diet, outlier.shape = NA) %>% 
+  gf_refine(coord_cartesian(ylim = c(0, 50))) %>% 
+  gf_theme(legend.position = "none") %>% 
+  gf_labs(title = "Carnivores have the largest spread of lengths")
+```
+
+
+

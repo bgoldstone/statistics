@@ -1,0 +1,106 @@
+---
+title: "First 10 Graphs"
+author: "Ben Goldstone"
+date: "9/6/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr)
+require(AER)
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+## College Distance Data Import
+[College Distance Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/CollegeDistance.html)
+```{r}
+collegeDistance <- read_csv("~/CSVs/CollegeDistance.csv")
+head(collegeDistance)
+```
+
+### Urban College
+```{r}
+gf_bar(~urban,data=collegeDistance,fill=~urban)
+```
+
+### Composite test scores and gender
+```{r}
+gf_boxplot(score~gender,data=collegeDistance, fill=~gender)
+
+```
+
+### Home owner and income level
+```{r}
+gf_bar(~income|home,data=collegeDistance, fill=~income)
+```
+
+### Region and distance divided by income level   
+```{r}
+gf_boxplot(distance~income|region,data=collegeDistance, fill=~income)
+```
+
+## China Income Data Import
+[China Income Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/ChinaIncome.html)
+```{r}
+ChinaIncome <- read_csv("~/CSVs/ChinaIncome.csv")
+head(ChinaIncome)
+```
+
+### Construction Income over Time
+```{r}
+gf_point(constructionIncome~year,data=ChinaIncome,color = ~ (constructionIncome > 1000))
+```
+
+### Construction Income
+```{r}
+gf_density(~constructionIncome,data=ChinaIncome)
+```
+
+### Industry Income and Agriculture Income
+```{r}
+gf_hex(industryIncome~agricultureIncome, data=ChinaIncome) %>% gf_lm() %>% gf_refine(scale_fill_viridis_c())
+
+industry = "blue"
+agriculture="darkgreen"
+gf_line(industryIncome~year,data=ChinaIncome,color=industry) %>% gf_line(agricultureIncome~year,data=ChinaIncome,color=agriculture) %>% gf_text(x=1988,y=4750,label="industry",color=industry,hjust = 1.2) %>% gf_text(x=1988,y=500,color=agriculture,label="agriculture", hjust=1.2)
+```
+
+## Consumer Goods Data Import
+[Consumer Goods Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/ConsumerGood.html)
+```{r}
+ConsumerGood <- read_csv("~/CSVs/ConsumerGood.csv")
+head(ConsumerGood)
+```
+
+### Share and distribution of consumer goods
+```{r}
+gf_point(share~distribution, data=ConsumerGood) %>% gf_lm()
+```
+
+### Price of Consumer Goods over time
+```{r}
+gf_point(price~rownames,data=ConsumerGood) %>% gf_lm()
+```
+
+### Price and distribution of Consumer Goods
+```{r}
+gf_point(price~distribution,data=ConsumerGood) %>% gf_lm()
+```

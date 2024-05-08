@@ -1,0 +1,76 @@
+---
+title: "Merging Data"
+author: "Ben Goldstone"
+date: "10/06/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr)
+require(forcats)
+require(dplyr)
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Import Dataset
+```{r}
+States9 = read_csv("~/CSVs/States9.csv")
+States9 = States9 %>% mutate_all(~gsub("\xa0","",.)) %>% 
+  rename_at("PolitalParty",~"PoliticalParty")
+States9Truncated = States9[c("State","AvgPrice","Population","PoliticalParty","Region",
+                             "BorderingStates")] 
+
+States10 = read_csv("~/CSVs/States10.csv")
+States10 = States10 %>% mutate(UnemploymentRates = UnemploymentRates/100)
+States10Truncated = States10[c("State","IncomeTax","PropertyTax","UnemploymentRates","MinimumWage")]
+AllStates = full_join(States9Truncated,States10Truncated)
+AllStates
+```
+
+## Unemployment Rate and Regions
+```{r}
+gf_boxplot(UnemploymentRates~fct_reorder(Region,UnemploymentRates,median), data=na.omit(AllStates), 
+           outlier.shape = NA, fill=~Region) %>%
+  gf_theme(legend.position="none") %>%
+  gf_labs(title="South Western States have the Highest Median Unemployment Rates",
+          x="US Region", y="Unemployment Rate")
+```
+
+## Average Populations and Regions
+```{r}
+# Convert Population to Numeric
+AllStates$Population = as.numeric(AllStates$Population)/1000000
+
+regions = AllStates %>% group_by(Region) %>% summarize(AvgPopulation = mean(Population))
+
+gf_boxplot(fct_reorder(Region,Population)~Population,data=AllStates,fill=~Region) %>%
+  # Labels
+  gf_labs(x="Population(Millions)",y="Region",title="Most Region Populations are Heavily Skewed") + 
+  # Mean Text
+  geom_text(data = regions, aes(x = AvgPopulation, y = Region, 
+    label = sprintf("Mean Population: %.2f", AvgPopulation), color = Region),
+    position = position_dodge(width = 0.8), vjust=-1, hjust=-0.5, size=3) +
+  # Set scale to 5
+  scale_x_continuous(breaks = seq(0, 40, by = 5))
+```
+
+
+

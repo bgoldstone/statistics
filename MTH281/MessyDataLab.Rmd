@@ -1,0 +1,103 @@
+---
+title: "Messy Data Lab"
+author: "Ben Goldstone"
+date: "11/27/2023"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+## Germainate Data
+```{r}
+# Read in dataset
+germinate = read.table("https://raw.githubusercontent.com/JedStephens/Handbook-of-Small-Data-Sets/master/GERMIN.DAT")
+
+# Change Column Names
+colnames(germinate) = c("W1","W2","W3","W4","W5","W6")
+
+head(germinate)
+
+yN = c(rep("Uncovered Boxes",4),rep("Covered Boxes",4))
+germinate = transform(germinate, Environment = yN)
+
+# Gathering
+require(tidyr)
+head(germinate)
+newGerminate = gather(germinate, "WaterLevel", "SeedsPer100",1:6)
+newGerminate$WaterLevel = parse_number(newGerminate$WaterLevel)
+newGerminate$SeedsPer100 = parse_number(newGerminate$SeedsPer100)
+
+gf_jitter(SeedsPer100~WaterLevel,data=newGerminate,color=~Environment,
+          position=position_jitterdodge(jitter.width = 0.3, dodge.width = 0.3), shape="triangle") %>%
+  gf_summary(geom = "line",size=1, linetype=~Environment, position=position_dodge(width=0.3)) %>%
+  gf_labs(x="Water Level", y = "Seeds Per 100")
+
+```
+## Guessing Lengths
+
+```{r}
+lengths = read.delim("https://raw.githubusercontent.com/JedStephens/Handbook-of-Small-Data-Sets/master/LENGTHS.DAT",header=FALSE)
+lengths = transform(lengths,Unit=c(rep("meters",3),rep("feet",5)))
+head(lengths)
+lengths = na.omit(lengths)
+newLengths = gather(lengths,"LengthName","Length",1:15)
+head(newLengths)
+meters = gf_dotplot(~Length,data=subset(newLengths, Unit == "meters"),binwidth = 0.2) %>%
+  gf_vline(xintercept=13.1,linetype = "dashed") %>%
+  gf_text(x=15,y=1,label="Actual Length = 13.1 m", size=4) %>%
+  gf_labs(title="Guessed Meters")
+
+
+feet = gf_dotplot(~Length,data=subset(newLengths, Unit == "feet"),binwidth = 0.5) %>%
+  gf_vline(xintercept=43,linetype = "dashed") %>%
+  gf_text(x=49,y=1,label="Actual Length = 43 feet", size=4) %>%
+  gf_labs(title="Guessed Feet")
+
+require(gridExtra)
+
+grid.arrange(feet,meters,nrow=2)
+```
+
+## Darwin Data
+
+```{r}
+darwin = read.table("https://raw.githubusercontent.com/JedStephens/Handbook-of-Small-Data-Sets/master/DARWIN.DAT")
+colnames(darwin) = c("Pair","CrossFertilized","SelfFertilized")
+head(darwin)
+gf_line(CrossFertilized~Pair,data=darwin) %>%
+  gf_line(SelfFertilized~Pair,data=darwin,linetype = "dashed") %>%
+  gf_labs(y="Height of Plants",x="Pair",title="Compare Height of Cross & Self Fertilized Plants") %>%
+  gf_text(x=15,y=19,label="Self") %>%
+  gf_text(x=15,y=11,label="Cross") %>%
+  gf_refine(coord_cartesian(ylim=c(0,25))) %>%
+  gf_refine(scale_x_continuous(breaks = seq(1:15)))
+
+darwin = transform(darwin, Bigger = ifelse(CrossFertilized-SelfFertilized > 0,"Cross","Self"),
+                   Diff=CrossFertilized-SelfFertilized)
+head(darwin)
+gf_linerange(Pair~0+Diff, data=darwin,size=4,color=~Bigger)
+```
+
+

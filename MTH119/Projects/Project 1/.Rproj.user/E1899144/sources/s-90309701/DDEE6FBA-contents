@@ -1,0 +1,39 @@
+---
+title: "RMarkdown Assignment"
+author: "Ellie Raff"
+date: "1/30/23"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Prefered Name 
+
+Ellie Raff
+
+# Muhlenberg Involvment 
+
+I am currently a freshman and an plan on majoring in Accounting. While I recieve emails from multiple clubs, I unfortunately have not attended a club meeting yet. However, I am planning on going to a Doodle Club meeting this week.
+
+# Sample Job 
+
+I think it would be fun to work in an ice cream truck for a day in the summer!
+
+```{r}
+gf_point(births~day_of_year, data=Births78) 
+```
+

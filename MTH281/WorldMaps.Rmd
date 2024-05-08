@@ -1,0 +1,90 @@
+---
+title: "World Maps"
+author: "Ben Goldstone"
+date: "11/6/2023"
+output: 
+  pdf_document:
+    fig_height: 6
+    fig_width: 7
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(raster)
+require(broom)
+require(Lock5Data)
+require(readr)
+require(maps)
+library(dplyr)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_map()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+
+```{r}
+world = map_data("world")
+head(world)
+head(HappyPlanetIndex)
+middle_east_countries = subset(world,region=="Israel" | region=="Egypt" | region=="Iran" | 
+                                 region=="Iraq" | region=="Saudi Arabia" | region=="Yemen" | 
+                                 region=="Syria" | region =="Jordan" | region=="United Arab Emirates" |
+                                 region=="Lebanon" | region=="Palestine" | region=="Oman" | 
+                                 region=="Kuwait" | region=="Qatar" | region=="Bahrain")
+
+# prepare for merge
+middle_east_countries = middle_east_countries %>%
+  rename(Country=region)
+head(middle_east_countries)
+
+middle_east_combined = left_join(middle_east_countries,HappyPlanetIndex,by="Country")
+head(middle_east_combined)
+# Graph 1
+gf_polygon(lat~long,data=middle_east_combined,group=~group,fill=~LifeExpectancy) %>%
+  gf_refine(coord_equal())%>%
+  gf_labs(title="\n\tIraq has the lowest life expectantcy in the Middle East")
+
+# Graph 2
+data("Alcohol")
+Alcohol = Alcohol %>%
+  rename(region=country)
+head(Alcohol)
+russia_map = subset(world,region=="Russia")
+AlcoholSubset = subset(Alcohol, year>1985 & year<=1994)
+russia_alcohol_map = full_join(russia_map,AlcoholSubset)
+
+gf_polygon(lat~long|year, fill=~alcohol, data=russia_alcohol_map, group=~group) %>%
+  gf_refine(coord_equal(),scale_fill_gradientn(colors=rev(rainbow(2)))) %>%
+  gf_labs(title="Alcohol Consumption has Gradually Increased in Russia in the Late 20th Century")
+
+
+# Graph 3
+israel = getData('GADM', country='ISR', level=1)
+israel_map = tidy(israel)
+head(israel_map)
+Earthquake = read_csv("~/CSVs/Earthquake.csv")
+Earthquake = Earthquake %>%
+  rename(LocationName= `Location Name`)
+Earthquake$LocationName = tolower(Earthquake$LocationName)
+head(Earthquake)
+ gf_point(Latitude~Longitude,data=subset(Earthquake, grepl("israel",LocationName)), size=1,color="red") %>%
+gf_polygon(lat~long,data=israel_map,group=~group,alpha=0.75) %>%
+  gf_refine(coord_equal()) %>%
+   gf_labs(title="\nMost Earthquakes in the Israel Region\n\tHappen in the West Bank")
+  
+```
+

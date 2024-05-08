@@ -1,0 +1,57 @@
+---
+title: "Two Sample Means Computer Lab"
+author: "Ben Goldstone"
+date: "3/31/23"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+
+```{r}
+library(readr)
+Spring2023Dataset <- read_csv("~/CSVs/Spring2023Dataset.csv")
+head(Spring2023Dataset)
+gf_boxplot(TextsSent~Personality,data=na.omit(Spring2023Dataset), fill=~Personality)
+```
+
+
+According to the boxplot expressing the relationship between **personalities** and **texts sent**, people who are extroverted on average send more texts than those that are introverted.
+
+
+```{r}
+
+favstats(TextsSent~Personality,data=na.omit(Spring2023Dataset))
+
+```
+
+
+On average people who are extroverted send 30.2 more texts than those who are introverted.
+
+
+```{r}
+
+t.test(TextsSent~Personality, data=Spring2023Dataset, conf.level=0.9)
+
+```
+
+I am 90% confident that the difference between texts sent based on personality is between 11 and 49.
+
+
+We can conclude that on average extroverts send more texts given that 0 is not in the 90% confidence interval.
+

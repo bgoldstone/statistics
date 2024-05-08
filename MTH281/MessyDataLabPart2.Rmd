@@ -1,0 +1,95 @@
+---
+title: "Messy Data Lab Part 2"
+author: "ben Goldstone"
+date: "11/29/2023"
+output: 
+  pdf_document:
+    fig_height: 5
+    fig_width: 7
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr)
+require(tidyr)
+require(forcats)
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+# Dataset # 209: Accident-Repeated Ness Among Children
+
+```{r}
+# Random Numbers: 345 208 149 154 465 104  63 209  87 187
+accident = read.table("https://raw.githubusercontent.com/JedStephens/Handbook-of-Small-Data-Sets/master/ACCIDENT.DAT")
+head(accident)
+accident$T2 = c(0,1,2,3,4,5,6,7)
+newAccident = gather(accident,"T1","accidents", 1:9)
+newAccident$T1 = parse_number(newAccident$T1)
+newAccident$T1 = newAccident$T1 - 1
+gf_line(accidents~T1,data=subset(newAccident, T2 == 7 & T1!=8),color = "red") %>%
+  gf_line(accidents~T2,data=subset(newAccident, T1 == 8 & T2!=7),color = "blue",linetype = "dashed") %>%
+  gf_text(x=0.1,y=215,label="Ages 4-7", color="red",size = 3.2) %>%
+  gf_text(x=0.1,y=245,label="Ages 8-11", color="blue",size=3.2) %>%
+  gf_labs(y="Count of Total Accidents",x="Number of Accidents in Age Range",
+          title="Kids Generally have the Same Number of Accidents\nBetween Age Ranges 4-7 and 8-11")
+
+
+```
+
+### I chose this visualization as I think it accurately portrays what the statisticians were envisioning which is comparing the difference in amount of accidents between the two age groups. I used color and different line weights to differentiate between the age groups in this dataset. Given there is no clear indication of what these statisticians were trying to find, I think this is the best way to represent this data in this situation.
+
+
+# Dataset # 149: Silver content of Byzantine coins
+
+```{r}
+silver = read.delim("https://raw.githubusercontent.com/JedStephens/Handbook-of-Small-Data-Sets/master/SILVER.DAT",header=FALSE)
+head(silver)
+silver = rename(silver, Coinage1=V1,Coinage2=V2,Coinage3=V3,Coinage4=V4)
+newSilver = gather(silver,"Era","SilverContent",1:4)
+head(newSilver)
+gf_boxplot(~SilverContent, data=newSilver,color=~Era) %>% 
+  gf_labs(title="Later Coinages have Less Silver Content than the Earlier Coinages") %>%
+  gf_theme(axis.text.x = element_blank(), axis.ticks.x = element_blank()) %>%
+  gf_refine(coord_flip())
+
+silver_model=aov(SilverContent~Era, data=newSilver)
+summary(silver_model)
+TukeyHSD(silver_model)
+```
+
+### I chose this visualization as it shows a the differences in silver content over many eras and provides a median for each era. I chouse to color the boxplots by era so we can see the differences in silver content for each era. Since there was no need for an x-axis I removed it to lessen confusion and flipped the boxplots so they were in a vertical orientation which I felt was more pleasent to look at. Given the boxplots and the ANOVA tests here, the silver content is not very significant between each of the different coinages. The coinanges that have the most significant difference is between Coinage 4 and Coingage 3 which is not what the statisticians were looking for which was a difference between the beginning (Coinage 1) and the end (Coinage 4).
+
+
+# Dataset # 154: Heights of Elderly Females With Osteoporosis
+
+```{r}
+heights = read.delim("https://raw.githubusercontent.com/JedStephens/Handbook-of-Small-Data-Sets/master/ELDERLY.DAT",
+  header = FALSE)
+
+newHeights = gather(heights, "ColName", "height", 1:ncol(heights)) %>% select(height)
+heightMean = round(favstats(newHeights$height)[6]$mean,2)
+newHeights = transform(newHeights, color=ifelse(heightMean - height < 0, "Below Mean", "Above Mean"))
+head(newHeights)
+meanText = paste("Mean: ",heightMean)
+gf_bar( ~height, data=newHeights,fill=~color) %>%
+  gf_labs(title="The Heights of Woman with Osteoporosis is Fairly Normally Distributed",fill="Mean") %>%
+  gf_vline(xintercept = heightMean,color="purple",size=1,alpha=0.5) %>%
+  gf_text(x=heightMean+4.5, y=31.5, label=meanText,size=4,color="purple", alpha=0.01)
+```
+
+### I chose this visualization as it shows the distribution of heights among women with Osteoporosis. I chouse to color the bars to show a below and above a mean to show how normally distributed the data is.  Given the bargraph here, the heights are pretty normally distributed among women with Osteoporosis.

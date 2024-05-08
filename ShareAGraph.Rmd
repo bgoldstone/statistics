@@ -1,0 +1,62 @@
+---
+title: "Share A Graph"
+author: "Ben Goldstone"
+date: "9/27/23"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)    # Load additional packages here 
+require(ggformula) # formula interface to ggplot2
+require(readr) # allows reading in datasets
+
+# Some customization.  You can alter or delete as desired (if you know what you are doing).
+
+theme_set(theme_bw()) # change theme for ggplot2
+trellis.par.set(theme=theme.mosaic()) # change default color scheme for lattice
+
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+## Consumer Goods Data Import
+[Consumer Goods Dataset](https://vincentarelbundock.github.io/Rdatasets/doc/AER/ConsumerGood.html)
+```{r}
+ConsumerGood <- read_csv("~/CSVs/ConsumerGood.csv")
+head(ConsumerGood)
+```
+
+### Share and distribution of consumer goods
+```{r}
+# Modify Dataset to include Ypred
+ConsumerGood = ConsumerGood %>% mutate(Ypred=-0.8896+3.547*distribution)
+
+# Linear Model
+dist_share_model <- lm(share ~ distribution, data = ConsumerGood)
+summary(dist_share_model)
+
+# scatter plot
+gf_point(
+  share ~ distribution,
+  data = ConsumerGood,
+  # sets color based on residual
+  color = ifelse(residuals(dist_share_model) == 0,"green",
+  # if point not on line set as red or blue
+  ifelse(residuals(dist_share_model) > 0, "red", "blue")
+  )) %>%
+  # plots line of best fit
+  gf_lm(color="gray50",alpha=0.5) %>%
+  # plots dotted residual lines from point to linear model
+  gf_linerange(Ypred+share~distribution,linetype="dotted",color="gray30")
+
+```

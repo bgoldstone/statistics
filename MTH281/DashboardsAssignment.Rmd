@@ -1,0 +1,184 @@
+---
+title: "Dashboards Assignment"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+    theme:
+      version: 4
+      bg: "#101010"
+      fg: "#FDF7F7" 
+      primary: "#ED79F9"
+      navbar-bg: "#0066FF"
+      base_font: 
+        google: Prompt
+      heading_font:
+        google: Sen
+      code_font:
+        google: 
+          # arguments to sass::font_google() 
+          family: JetBrains Mono
+          local: false
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+require(mosaic)
+require(Lock5Data)
+require(forcats)
+require(plotly)
+require(bslib)
+require(tidyr)
+data("BaseballHits2019")
+BaseballHits2019$Wins <- as.numeric(BaseballHits2019$Wins)
+BaseballHits2019$Team <- as.factor(BaseballHits2019$Team)
+
+```
+
+Baseball Team Statistics 2019
+=======================================================================
+Column {data-width=600}
+-----------------------------------------------------------------------
+
+### Wins for Baseball Teams in 2019
+
+```{r}
+team_wins = gf_point(Wins~fct_reorder(Team,Wins),data=BaseballHits2019,color=~Team) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Teams")
+ggplotly(team_wins)
+```
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+
+### Home Runs for Baseball Teams in 2019
+```{r}
+team_home_runs = gf_point(HomeRuns~fct_reorder(Team,HomeRuns),data=BaseballHits2019,color=~Team) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Teams")
+ggplotly(team_home_runs)
+```
+
+### Stats
+
+```{r}
+valueBox(round(mean(BaseballHits2019$Wins),2),caption="Average Wins Baseball teams",icon = "fa-trophy",color = "green")
+```
+
+### Stats
+```{r}
+valueBox(round(mean(BaseballHits2019$HomeRuns),2),caption="Average Home Runs Baseball teams",icon = "fa-home",color="red")
+```
+
+
+Baseball Team AL and NL Statistics
+=======================================================================
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### American League Wins
+
+```{r}
+AL = subset(BaseballHits2019, League == "AL")
+NL = subset(BaseballHits2019,League == "NL")
+team_wins = gf_point(Wins~fct_reorder(Team,Wins),data=AL,color=~Team) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Teams")
+ggplotly(team_wins)
+```
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+
+### National League Wins
+```{r}
+team_home_runs = gf_point(Wins~fct_reorder(Team,Wins),data=NL,color=~Team) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Teams")
+ggplotly(team_home_runs)
+```
+
+
+Column {data-width=175}
+-----------------------------------------------------------------------
+### Stats
+```{r}
+valueBox(round(mean(NL$Wins),2),caption="Average National League Wins",icon = "fa-trophy",color="lightblue")
+```
+
+### Stats
+```{r}
+valueBox(round(mean(NL$HomeRuns),2),caption="Average National League Home Runs",icon = "fa-home",color="info")
+```
+
+
+### Stats
+```{r}
+valueBox(round(mean(AL$Wins),2),caption="Average American League Wins",icon = "fa-trophy",color = "warning")
+```
+
+### Stats
+```{r}
+valueBox(round(mean(AL$Wins),2),caption="Average American League Home Runs",icon = "fa-home",color="danger")
+```
+
+Baseball Hit Types and Stolen Bases
+=======================================================================
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+### Baseball Hits
+
+```{r}
+BaseballHits2019v2 = gather(BaseballHits2019,key="HitTypes",value="HitValue",6:8)
+hits = gf_boxplot(HitValue~HitTypes,data=BaseballHits2019v2,color=~HitTypes) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Hit Types", y="Count")
+ggplotly(hits)
+```
+
+Column {data-width=400}
+-----------------------------------------------------------------------
+
+
+### Baseball Base Stealing
+```{r}
+stolen = gf_point(StolenBases~CaughtStealing,data=BaseballHits2019,color=~League) %>%
+  gf_theme(axis.text.x = element_text(angle = 45, hjust = 1),legend.position="none") %>%
+  gf_labs(x="Number of Stolen Bases", y="Number of Times Caught Stealing")
+ggplotly(stolen)
+```
+
+
+Column {data-width=175}
+-----------------------------------------------------------------------
+### Stats
+```{r}
+valueBox(round(mean(BaseballHits2019$Doubles),2),caption="Average # of Doubles",icon = "fa-hourglass-half",color="lightblue")
+```
+
+### Stats
+```{r}
+valueBox(round(mean(BaseballHits2019$Triples),2),caption="Average # of Triples",icon = "fa-fast-forward",color="info")
+```
+
+
+### Stats
+```{r}
+valueBox(round(cor(StolenBases~CaughtStealing,data=BaseballHits2019),2),caption="Correlation Between Stealing and Caught Stealing",icon = "fa-line-chart",color = "warning")
+```
+
+### Stats
+```{r}
+valueBox(sum(AL$StolenBases),caption="American League # of Stolen Bases",icon = "fa-hand-paper-o",color="danger")
+```
+
+
+### Stats
+```{r}
+valueBox(sum(NL$StolenBases),caption="National League # of stolen bases",icon = "fa-hand-paper-o",color="danger")
+```

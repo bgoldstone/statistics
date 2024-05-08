@@ -1,0 +1,105 @@
+---
+title: "Project 4 Final Report"
+author: "Ben Goldstone"
+date: "5/3/2023"
+output: 
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+
+
+# Data Set
+```{r}
+library(readr)
+datascience_salaries <- read_csv("~/CSVs/ds_salaries.csv")
+head(datascience_salaries)
+
+```
+# Columns
+Data Science Job Salaries Dataset contains 11 columns, each are:
+
+**work_year:** The year the salary was paid.
+
+**experience_level:** The experience level in the job during the year. (SE:Senior,
+EN:Entry level, EX:Executive level, MI:Mid/Intermediate level)
+
+**employment_type:** The type of employment for the role.
+<!-- CT: Consulting? -->
+
+**job_title:** The role worked in during the year.
+
+**salary:** The total gross salary amount paid.
+
+**salary_currency:** The currency of the salary.
+
+**salary_in_usd:** The salary in USD.
+
+**employee_residence:** Employee's primary country of residence in during the work year as an ISO 3166 country code.
+
+**remote_ratio:** The overall amount of work done remotely.
+
+**company_location:** The country of the employer's main office or contracting branch.
+
+**company_size:** The median number of people that worked for the company during the year.
+
+# Data Source
+This data was sourced from [AI-jobs.net](https://ai-jobs.net/). AI-Jobs.net seems to connect directly to employers for posting information on jobs. This [dataset](https://www.kaggle.com/datasets/ppb00x/credit-risk-customers) is from Kaggle datasets.
+
+The data does not seem to have a direct source for it's data besides specifying that they "Provide a direct link between candidates and employers."
+
+# Experience Level and Salary
+
+```{r}
+# convert to thousands
+datascience_salaries$salary_in_usd_in_thousands <- datascience_salaries$salary_in_usd/1000
+
+# order and relabel experience_level
+datascience_salaries$experience_level_ordered <- factor(datascience_salaries$experience_level, levels=c("EN","MI","SE","EX"), labels = c("Entry Level", "Mid-Level", "Senior", "Executive"))
+
+# boxplot with axis and legend labels
+gf_boxplot(salary_in_usd_in_thousands~experience_level_ordered, fill=~experience_level_ordered, data=na.omit(datascience_salaries)) + xlab("Experience Levels") + ylab("Salary in USD (in thousands)") + labs(fill = "Experience Levels")
+favstats(salary_in_usd_in_thousands~experience_level_ordered, data=datascience_salaries)
+
+```
+
+## Hypotheses
+
+H0: mu_entry = mu_mid = mu_senior = mu_executive
+
+Ha: Not all means are the same
+
+## General Trends
+In General as your experience level increases, your salary increases. Given the substantial number of outliers in this dataset, we should not run an ANOVA test, but for the sake of practice, we will run one anyway also the Standard-Deviation rule fits an ANOVA test.
+
+
+```{r}
+experience_model=aov(salary_in_usd~experience_level, data=datascience_salaries)
+summary(experience_model)
+```
+# Analysis
+Since the P-Value is very small, we can conclude that salaries are greater when you have more experience. In addition, we can run a Tukey Comparisons Test to see how different the salaries are based on the position.
+
+## Tukey Comparisons Test
+```{r}
+TukeyHSD(experience_model)
+```
+## Tukey Comparisons Test Analysis
+
+Given the substantial number of outliers in this dataset, we cannot get a consistent adjusted p-value across the different experience levels. All groups are very significantly different given the p-value is so small leading us to reject the null Hypothesis that all salaries are the same across different experience levels.
+
+## Final Conclusions
+The dataset is very unbalanced in terms of the number of collected entries per category, so it is difficult to tell how balanced the ANOVA test is and with more data and less outliers, we can probably see a different difference between each category.

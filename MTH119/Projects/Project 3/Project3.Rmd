@@ -1,0 +1,41 @@
+---
+title: "Project 3 Data Collection"
+author: "Benjamin Goldstone & Anthony Panuccio"
+date: "March 24, 2023"
+output: 
+  html_document:
+    fig_height: 3
+    fig_width: 5
+  pdf_document:
+    fig_height: 3
+    fig_width: 5
+  word_document:
+    fig_height: 3
+    fig_width: 5
+---
+
+```{r, setup, include=FALSE}
+require(mosaic)   # Load additional packages here 
+knitr::opts_chunk$set(
+  tidy=FALSE,     # display code as typed
+  size="small")   # slightly smaller font for code
+```
+# Collection Method and Description
+Using a ball and a bucket both of us did 20 trials with different hands and angles based on a random number from a random number generator to see if there is evidence that one way of throwing a ball is dominant. Each hand/angle combination was assigned a number from 1-4.
+
+1. Left Over
+2. Right Over
+3. Left Under
+4. Right Under
+
+# Variables
+
+Response: Make or Miss
+Explanatory: Overhand/Underhand and Right Hand/Left Hand
+
+```{r}
+library(readr)
+DataCollectionProject3 <- read_csv("DataCollectionProject3.csv")
+head(DataCollectionProject3)
+```
+
